@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name:       WooCommerce Elállási Kezelő
- * Plugin URI:        https://te-oldalad.hu/woo-elallas-kezelo
+ * Plugin URI:        https://github.com/csalamade/woo-elallas-kezelo
  * Description:       Automatizált, 2026-os jogszabályoknak megfelelő elállási gomb és folyamatkezelő magánszemélyek (B2C) számára.
- * Version:           1.0
- * Author:            A Te Neved vagy Céged
- * Author URI:        https://te-oldalad.hu
+ * Version:           1.0.0
+ * Author:            1st-tech
+ * Author URI:        https://1st-tech.hu
  * Text Domain:       woo-elallas-kezelo
  */
 
@@ -13,6 +13,19 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+
+require 'plugin-update-checker/plugin-update-checker.php';
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
+$myUpdateChecker = PucFactory::buildUpdateChecker(
+    'https://github.com/csalamade/woo-elallas-kezelo/',
+    __FILE__,
+    'woo-elallas-kezelo'
+);
+#$myUpdateChecker->setBranch('main'); #relaseből tölti le ha ez nincsen ott
+
+
+
 
 class WEJK_Plugin_Core {
 
