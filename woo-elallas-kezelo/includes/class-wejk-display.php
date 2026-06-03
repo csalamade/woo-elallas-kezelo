@@ -15,6 +15,11 @@ class WEJK_Display {
     }
 
     public function display_return_button($order) {
+        // Elrejtés a sikeres rendelés (köszönő) oldalról
+        if (function_exists('is_order_received_page') && is_order_received_page()) {
+            return;
+        }
+
         $pre_dispatch_statuses = get_option('wejk_pre_dispatch_statuses', array('processing', 'pending'));
         if (!is_array($pre_dispatch_statuses)) {
             $pre_dispatch_statuses = array();

@@ -33,7 +33,8 @@ class WEJK_Plugin_Core {
 
         // Adminisztrációs felület (csak ha adminban vagyunk)
         if (is_admin()) {
-            require_once $plugin_dir . 'includes/class-wejk-admin.php';
+            require_once plugin_dir_path(__FILE__) . 'includes/class-wejk-admin.php';
+            require_once plugin_dir_path(__FILE__) . 'includes/class-wejk-admin-order.php';
         }
     }
 
@@ -44,6 +45,7 @@ class WEJK_Plugin_Core {
 
         if (is_admin()) {
             new WEJK_Admin();
+            new WEJK_Admin_Order();
         }
 
         // Státuszváltás figyelése a _wejk_shipped_date mentéséhez

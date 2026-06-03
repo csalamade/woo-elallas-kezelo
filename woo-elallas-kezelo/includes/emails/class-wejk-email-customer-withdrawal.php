@@ -91,10 +91,18 @@ class WEJK_Email_Customer_Withdrawal extends WC_Email {
         echo '<table cellspacing="0" cellpadding="6" style="width: 100%; border: 1px solid #eee;">';
         echo '<thead><tr><th style="text-align:left; border: 1px solid #eee;">' . esc_html__('Termék', 'woo-elallas-kezelo') . '</th><th style="text-align:left; border: 1px solid #eee;">' . esc_html__('Mennyiség', 'woo-elallas-kezelo') . '</th></tr></thead><tbody>';
         
+        $actual_returned_items = $this->returned_items;
+        if (empty($actual_returned_items)) {
+            $meta = $this->object->get_meta('_wejk_returned_items');
+            if (is_array($meta) && !empty($meta)) {
+                $actual_returned_items = $meta;
+            }
+        }
+
         $items = $this->object->get_items();
         foreach ($items as $item_id => $item) {
             $product_id = $item->get_product_id();
-            if (empty($this->returned_items) || in_array($product_id, $this->returned_items)) {
+            if (empty($actual_returned_items) || in_array($product_id, $actual_returned_items)) {
                 echo '<tr>';
                 echo '<td style="border: 1px solid #eee;">' . esc_html($item->get_name()) . '</td>';
                 echo '<td style="border: 1px solid #eee;">' . esc_attr($item->get_quantity()) . ' db</td>';

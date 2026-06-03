@@ -45,6 +45,7 @@ class WEJK_Admin {
         register_setting('wejk_option_group', 'wejk_pre_dispatch_action_status');
         register_setting('wejk_option_group', 'wejk_shipped_status');
         register_setting('wejk_option_group', 'wejk_transit_time_days');
+        register_setting('wejk_option_group', 'wejk_success_message');
 
         add_settings_section(
             'wejk_setting_section',
@@ -91,10 +92,29 @@ class WEJK_Admin {
             array($this, 'email_section_info'),
             'wejk-setting-admin'
         );
+
+        add_settings_section(
+            'wejk_text_setting_section',
+            __('Felületi szövegek', 'woo-elallas-kezelo'),
+            array($this, 'text_section_info'),
+            'wejk-setting-admin'
+        );
+
+        add_settings_field(
+            'wejk_success_message',
+            __('Sikeres beküldés üzenete', 'woo-elallas-kezelo'),
+            array($this, 'success_message_callback'),
+            'wejk-setting-admin',
+            'wejk_text_setting_section'
+        );
     }
 
     public function section_info() {
         echo esc_html__('Állítsd be, hogy mely rendelési státuszokban lehetséges az elállás és a rendelés lemondása.', 'woo-elallas-kezelo');
+    }
+
+    public function text_section_info() {
+        echo esc_html__('A weboldalon megjelenő egyedi szövegek beállításai.', 'woo-elallas-kezelo');
     }
 
     public function email_section_info() {
@@ -154,5 +174,12 @@ class WEJK_Admin {
         $option = get_option('wejk_transit_time_days', '2');
         echo '<input type="number" name="wejk_transit_time_days" value="' . esc_attr($option) . '" min="0" step="1" />';
         echo '<p class="description">' . esc_html__('Hány nap a szállítás? Ennyi nap adódik hozzá a feladási (státuszváltás) dátumához, hogy a 14 nap ténylegesen az átvételtől induljon.', 'woo-elallas-kezelo') . '</p>';
+    }
+
+    public function success_message_callback() {
+        $default_msg = "Az elállási/lemondási nyilatkozatot sikeresen rögzítettük.\n\nA visszaigazolást, valamint a további teendőket elküldtük az e-mail címére.\n\n(Ez a jogszabályoknak megfelelő tartós adathordozónak minősül).";
+        $option = get_option('wejk_success_message', $default_msg);
+        echo '<textarea name="wejk_success_message" rows="6" cols="60" style="width: 100%; max-width: 600px;">' . esc_textarea($option) . '</textarea>';
+        echo '<p class="description">' . esc_html__('Ez a szöveg jelenik meg a vásárlónak, miután sikeresen elküldte az űrlapot. Hagyományos sortöréseket és egyszerű HTML kódokat (pl. &lt;strong&gt;) is használhatsz.', 'woo-elallas-kezelo') . '</p>';
     }
 }

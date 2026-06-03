@@ -19,15 +19,18 @@ class WEJK_Process {
 
     public function display_success_page() {
         if (isset($_GET['wejk_elallas_success'])) {
+            $default_msg = "Az elállási/lemondási nyilatkozatot sikeresen rögzítettük.\n\nA visszaigazolást, valamint a további teendőket elküldtük az e-mail címére.\n\n(Ez a jogszabályoknak megfelelő tartós adathordozónak minősül).";
+            $success_message = get_option('wejk_success_message', $default_msg);
+
             get_header();
             ?>
             <div class="woocommerce">
                 <div class="woocommerce-MyAccount-content" style="width: 100%; max-width: 800px; margin: 50px auto; text-align: center;">
                     <div style="padding: 40px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; color: #155724;">
-                        <h2 style="color: #155724;"><?php esc_html_e('Nyilatkozat sikeresen beküldve', 'woo-elallas-kezelo'); ?></h2>
-                        <p style="font-size: 16px; margin-bottom: 15px;"><?php esc_html_e('Az elállási/lemondási nyilatkozatot sikeresen rögzítettük.', 'woo-elallas-kezelo'); ?></p>
-                        <p style="font-size: 16px; font-weight: bold; margin-bottom: 5px;"><?php esc_html_e('A visszaigazolást, valamint a további teendőket elküldtük az e-mail címére.', 'woo-elallas-kezelo'); ?></p>
-                        <p style="font-size: 14px; margin-bottom: 25px;"><?php esc_html_e('(Ez a jogszabályoknak megfelelő tartós adathordozónak minősül).', 'woo-elallas-kezelo'); ?></p>
+                        <h2 style="color: #155724; margin-bottom: 20px;"><?php esc_html_e('Nyilatkozat sikeresen beküldve', 'woo-elallas-kezelo'); ?></h2>
+                        <div style="font-size: 16px; margin-bottom: 25px; line-height: 1.6;">
+                            <?php echo wp_kses_post(wpautop($success_message)); ?>
+                        </div>
                         
                         <a href="<?php echo esc_url(home_url()); ?>" class="button button-primary"><?php esc_html_e('Vissza a főoldalra', 'woo-elallas-kezelo'); ?></a>
                     </div>
@@ -82,16 +85,35 @@ class WEJK_Process {
                 exit;
             }
             $order->update_meta_data('_wejk_returned_items', $returned_items);
-            $order->save();
+            
+            // Részleges lemondás vizsgálata
+            $is_partial_return = count($returned_items) < count($order->get_items());
 
-            if ($is_pre_dispatch) {
-                $target_status = get_option('wejk_pre_dispatch_action_status', 'cancelled');
-                $order->update_status($target_status, __('A vásárló feladás előtt lemondta a rendelést a rendeléskövető felületen.', 'woo-elallas-kezelo'));
-            } else {
-                // Alapértelmezett on-hold a teljesített utáni elállásra
+            if ($is_partial_return) {
+                // Részleges esetén mindig felfüggesztve (on-hold)
                 $target_status = 'on-hold';
-                $order->update_status($target_status, __('A vásárló elállást kezdeményezett a rendeléskövető felületen (feladás után).', 'woo-elallas-kezelo'));
+                $order->update_status($target_status, __('Részleges elállás/lemondás érkezett a rendeléskövető felületen.', 'woo-elallas-kezelo'));
+            } else {
+                if ($is_pre_dispatch) {
+                    $target_status = get_option('wejk_pre_dispatch_action_status', 'cancelled');
+                    $order->update_status($target_status, __('A vásárló feladás előtt teljes egészében lemondta a rendelést a rendeléskövető felületen.', 'woo-elallas-kezelo'));
+                } else {
+                    // Alapértelmezett on-hold a teljesített utáni teljes elállásra
+                    $target_status = 'on-hold';
+                    $order->update_status($target_status, __('A vásárló teljes elállást kezdeményezett a rendeléskövető felületen (feladás után).', 'woo-elallas-kezelo'));
+                }
             }
+
+            // Rendelési Jegyzet (Order Note) hozzáadása a terméklistával
+            $note = $is_partial_return ? __('Részleges lemondás/elállás. Érintett termékek:', 'woo-elallas-kezelo') . "\n" : __('Teljes lemondás/elállás. Érintett termékek:', 'woo-elallas-kezelo') . "\n";
+            foreach ($order->get_items() as $item) {
+                if (in_array($item->get_product_id(), $returned_items)) {
+                    $note .= '- ' . $item->get_name() . ' (ID: ' . $item->get_product_id() . ')' . "\n";
+                }
+            }
+            $order->add_order_note($note);
+            
+            $order->save();
 
             // Vásárlói visszaigazoló és admin értesítő e-mail küldése (WC_Email)
             $mailer = WC()->mailer();
