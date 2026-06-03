@@ -56,6 +56,10 @@ class WEJK_Plugin_Core {
     public function register_emails($emails) {
         require_once plugin_dir_path(__FILE__) . 'includes/emails/class-wejk-email-customer-withdrawal.php';
         $emails['WEJK_Email_Customer_Withdrawal'] = new WEJK_Email_Customer_Withdrawal();
+        
+        require_once plugin_dir_path(__FILE__) . 'includes/emails/class-wejk-email-admin-withdrawal.php';
+        $emails['WEJK_Email_Admin_Withdrawal'] = new WEJK_Email_Admin_Withdrawal();
+        
         return $emails;
     }
 

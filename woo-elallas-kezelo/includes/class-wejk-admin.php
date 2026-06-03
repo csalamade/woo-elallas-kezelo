@@ -98,9 +98,14 @@ class WEJK_Admin {
     }
 
     public function email_section_info() {
-        $email_settings_url = admin_url('admin.php?page=wc-settings&tab=email&section=wejk_customer_withdrawal');
-        echo '<p>' . esc_html__('A jogszabályok értelmében a vásárló azonnali visszaigazolást kap az elállásról e-mailben.', 'woo-elallas-kezelo') . '</p>';
-        echo '<p><a href="' . esc_url($email_settings_url) . '" class="button button-primary">' . esc_html__('E-mail szövegezésének testreszabása itt', 'woo-elallas-kezelo') . '</a></p>';
+        $customer_email_url = admin_url('admin.php?page=wc-settings&tab=email&section=wejk_email_customer_withdrawal');
+        $admin_email_url = admin_url('admin.php?page=wc-settings&tab=email&section=wejk_email_admin_withdrawal');
+        
+        echo '<p>' . esc_html__('A rendszer automatikusan értesíti a vásárlót és az adminisztrátort az elállásról a WooCommerce e-mail rendszerén keresztül.', 'woo-elallas-kezelo') . '</p>';
+        echo '<p>';
+        echo '<a href="' . esc_url($customer_email_url) . '" class="button button-secondary" style="margin-right: 10px;">' . esc_html__('Vásárlói e-mail testreszabása', 'woo-elallas-kezelo') . '</a>';
+        echo '<a href="' . esc_url($admin_email_url) . '" class="button button-secondary">' . esc_html__('Admin értesítő testreszabása', 'woo-elallas-kezelo') . '</a>';
+        echo '</p>';
     }
 
     public function pre_dispatch_statuses_callback() {

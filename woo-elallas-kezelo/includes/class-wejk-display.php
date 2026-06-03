@@ -61,16 +61,6 @@ class WEJK_Display {
         }
 
         // Gomb és az elrejtett űrlap
-        if (isset($_GET['elallas_success']) && $_GET['elallas_success'] == '1') {
-            ?>
-            <div class="wejk-return-container" style="margin-top: 30px; padding: 20px; background: #d4edda; border-left: 4px solid #28a745; color: #155724;">
-                <h3><?php esc_html_e('Nyilatkozat sikeresen beküldve', 'woo-elallas-kezelo'); ?></h3>
-                <p><?php esc_html_e('Az elállási/lemondási nyilatkozatot sikeresen rögzítettük. Az ezzel kapcsolatos visszaigazolást, valamint a további teendőket elküldtük az e-mail címére (ez a jogszabályoknak megfelelő tartós adathordozónak minősül).', 'woo-elallas-kezelo'); ?></p>
-            </div>
-            <?php
-            return;
-        }
-
         if ($is_pre_dispatch) {
             $title = __('Szeretné lemondani a rendelését?', 'woo-elallas-kezelo');
             $desc = __('Rendelése még feladás előtt áll, így most gyorsan és egyszerűen lemondhatja. A 45/2014. (II. 26.) Korm. rendelet 20. § (2) bek. alapján ez jogilag is elállásnak minősül.', 'woo-elallas-kezelo');
@@ -84,6 +74,22 @@ class WEJK_Display {
         }
         ?>
         <div class="wejk-return-container" style="margin-top: 30px; padding: 20px; background: #f9f9f9; border-left: 4px solid #007cba;">
+            <?php
+            if (isset($_GET['wejk_error'])) {
+                $error_msg = '';
+                if ($_GET['wejk_error'] === 'no_products') {
+                    $error_msg = __('Kérjük, válasszon ki legalább egy terméket az elálláshoz/lemondáshoz!', 'woo-elallas-kezelo');
+                } elseif ($_GET['wejk_error'] === 'invalid_status') {
+                    $error_msg = __('Ezt a rendelést jelenleg nem lehet lemondani vagy az elállási folyamat már elkezdődött.', 'woo-elallas-kezelo');
+                } elseif ($_GET['wejk_error'] === 'security') {
+                    $error_msg = __('Biztonsági hiba történt. Kérjük, próbálja újra.', 'woo-elallas-kezelo');
+                }
+                
+                if (!empty($error_msg)) {
+                    echo '<div class="woocommerce-error" style="background: #f8d7da; border-left: 4px solid #dc3545; color: #721c24; padding: 15px; margin-bottom: 20px;">' . esc_html($error_msg) . '</div>';
+                }
+            }
+            ?>
             <h3><?php echo esc_html($title); ?></h3>
             <p><?php echo esc_html($desc); ?></p>
             <form method="post" action="">
@@ -95,19 +101,38 @@ class WEJK_Display {
                     <h4 style="margin-top: 0;"><?php esc_html_e('Válassza ki az érintett termékeket:', 'woo-elallas-kezelo'); ?></h4>
                     <?php
                     foreach ($order->get_items() as $item_id => $item) {
-                        $product = $item->get_product();
-                        $product_id = $product ? $product->get_id() : 0;
-                        ?>
-                        <label style="display: block; margin-bottom: 5px; cursor: pointer;">
-                            <input type="checkbox" name="wejk_returned_products[]" value="<?php echo esc_attr($product_id); ?>" checked>
-                            <?php echo esc_html($item->get_name()) . ' (' . esc_attr($item->get_quantity()) . ' db)'; ?>
-                        </label>
-                        <?php
+                        echo '<div style="margin-bottom: 10px;">';
+                        echo '<label for="wejk_item_' . esc_attr($item_id) . '" style="display: flex; align-items: center; cursor: pointer;">';
+                        echo '<input type="checkbox" name="wejk_returned_products[]" value="' . esc_attr($item->get_product_id()) . '" id="wejk_item_' . esc_attr($item_id) . '">';
+                        echo '<span style="margin-left: 8px;">' . esc_html($item->get_name()) . ' (x' . esc_html($item->get_quantity()) . ')</span>';
+                        echo '</label>';
+                        echo '</div>';
                     }
                     ?>
                 </div>
 
-                <button type="submit" class="button alt" name="process_return_request" onclick="return confirm('<?php echo esc_attr($confirm); ?>');"><?php echo esc_html($btn_text); ?></button>
+                <button type="submit" class="button alt wejk-submit-btn-<?php echo esc_attr($order->get_id()); ?>" name="process_return_request"><?php echo esc_html($btn_text); ?></button>
+                
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    var btn = document.querySelector('.wejk-submit-btn-<?php echo esc_attr($order->get_id()); ?>');
+                    if (btn) {
+                        btn.addEventListener('click', function(e) {
+                            var form = this.closest('form');
+                            var checkboxes = form.querySelectorAll('input[name="wejk_returned_products[]"]:checked');
+                            if (checkboxes.length === 0) {
+                                e.preventDefault();
+                                alert('<?php esc_attr_e('Kérjük, válasszon ki legalább egy terméket az elálláshoz/lemondáshoz!', 'woo-elallas-kezelo'); ?>');
+                                return false;
+                            }
+                            if (!confirm('<?php echo esc_attr($confirm); ?>')) {
+                                e.preventDefault();
+                                return false;
+                            }
+                        });
+                    }
+                });
+                </script>
             </form>
         </div>
         <?php
