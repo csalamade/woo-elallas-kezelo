@@ -103,13 +103,45 @@ class WEJK_Display {
                 <input type="hidden" name="return_order_id" value="<?php echo esc_attr($order->get_id()); ?>">
                 
                 <div class="wejk-product-list" style="margin: 15px 0; padding: 15px; background: #fff; border: 1px solid #ddd;">
+                    
+                    <?php
+                    $existing_returned = $order->get_meta('_wejk_returned_items');
+                    if (!is_array($existing_returned)) {
+                        $existing_returned = array();
+                    }
+                    
+                    // Ellenőrizzük, hogy minden termék le van-e már mondva
+                    $all_returned = true;
+                    foreach ($order->get_items() as $item) {
+                        if (!in_array($item->get_product_id(), $existing_returned)) {
+                            $all_returned = false;
+                            break;
+                        }
+                    }
+
+                    if ($all_returned) {
+                        echo '<p style="color: #155724; font-weight: bold;">' . esc_html__('Ebből a rendelésből már minden tételt lemondott / visszaküldött.', 'woo-elallas-kezelo') . '</p>';
+                        echo '</div></form></div>';
+                        return; // Kilépünk, nem mutatjuk a beküldés gombot
+                    }
+                    ?>
+
                     <h4 style="margin-top: 0;"><?php esc_html_e('Válassza ki az érintett termékeket:', 'woo-elallas-kezelo'); ?></h4>
                     <?php
                     foreach ($order->get_items() as $item_id => $item) {
-                        echo '<div style="margin-bottom: 10px;">';
+                        $product_id = $item->get_product_id();
+                        $is_returned = in_array($product_id, $existing_returned);
+                        $disabled_attr = $is_returned ? 'disabled="disabled"' : '';
+                        $checked_attr = $is_returned ? 'checked="checked"' : '';
+                        $opacity = $is_returned ? '0.6' : '1';
+                        
+                        echo '<div style="margin-bottom: 10px; opacity: ' . esc_attr($opacity) . ';">';
                         echo '<label for="wejk_item_' . esc_attr($item_id) . '" style="display: flex; align-items: center; cursor: pointer;">';
-                        echo '<input type="checkbox" name="wejk_returned_products[]" value="' . esc_attr($item->get_product_id()) . '" id="wejk_item_' . esc_attr($item_id) . '">';
+                        echo '<input type="checkbox" name="wejk_returned_products[]" value="' . esc_attr($product_id) . '" id="wejk_item_' . esc_attr($item_id) . '" ' . $disabled_attr . ' ' . $checked_attr . '>';
                         echo '<span style="margin-left: 8px;">' . esc_html($item->get_name()) . ' (x' . esc_html($item->get_quantity()) . ')</span>';
+                        if ($is_returned) {
+                            echo '<span style="margin-left: 10px; color: #dc3232; font-size: 0.9em; font-weight: bold;">' . esc_html__('(Már lemondva)', 'woo-elallas-kezelo') . '</span>';
+                        }
                         echo '</label>';
                         echo '</div>';
                     }

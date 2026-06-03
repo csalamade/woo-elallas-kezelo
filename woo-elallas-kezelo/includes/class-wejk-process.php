@@ -79,35 +79,53 @@ class WEJK_Process {
 
             // Részleges elállás: termékek ellenőrzése
             $returned_items = isset($_POST['wejk_returned_products']) ? array_map('absint', $_POST['wejk_returned_products']) : array();
-            if (empty($returned_items)) {
-                $redirect_url = add_query_arg('wejk_error', 'no_products', remove_query_arg(array('wejk_elallas_success'), wp_unslash($_SERVER['REQUEST_URI'])));
+            
+            // 3. Már meglévő lemondások betöltése
+            $existing_returned = $order->get_meta('_wejk_returned_items');
+            if (!is_array($existing_returned)) {
+                $existing_returned = array();
+            }
+
+            // 4. Szűrjük az újonnan beküldött listát (ne dolgozzuk fel újra azt, ami már le van mondva)
+            $new_returned_items = array();
+            foreach ($returned_items as $pid) {
+                if (!in_array($pid, $existing_returned)) {
+                    $new_returned_items[] = $pid;
+                }
+            }
+
+            if (empty($new_returned_items)) {
+                $redirect_url = add_query_arg('wejk_error', 'no_products', wp_get_referer() ? wp_get_referer() : wc_get_endpoint_url('orders'));
                 wp_safe_redirect($redirect_url);
                 exit;
             }
-            $order->update_meta_data('_wejk_returned_items', $returned_items);
+
+            // Összefűzzük az összeset a meta mentéshez
+            $merged_returned_items = array_unique(array_merge($existing_returned, $new_returned_items));
+            $order->update_meta_data('_wejk_returned_items', $merged_returned_items);
             
-            // Részleges lemondás vizsgálata
-            $is_partial_return = count($returned_items) < count($order->get_items());
+            // Részleges lemondás vizsgálata az összes lemondott termék alapján
+            $is_partial_return = count($merged_returned_items) < count($order->get_items());
 
             if ($is_partial_return) {
                 // Részleges esetén mindig felfüggesztve (on-hold)
                 $target_status = 'on-hold';
-                $order->update_status($target_status, __('Részleges elállás/lemondás érkezett a rendeléskövető felületen.', 'woo-elallas-kezelo'));
+                $order->update_status($target_status, __('Újabb részleges elállás/lemondás érkezett a rendeléskövető felületen.', 'woo-elallas-kezelo'));
             } else {
                 if ($is_pre_dispatch) {
                     $target_status = get_option('wejk_pre_dispatch_action_status', 'cancelled');
-                    $order->update_status($target_status, __('A vásárló feladás előtt teljes egészében lemondta a rendelést a rendeléskövető felületen.', 'woo-elallas-kezelo'));
+                    $order->update_status($target_status, __('A vásárló a maradék termékeket is lemondta feladás előtt a rendeléskövető felületen.', 'woo-elallas-kezelo'));
                 } else {
                     // Alapértelmezett on-hold a teljesített utáni teljes elállásra
                     $target_status = 'on-hold';
-                    $order->update_status($target_status, __('A vásárló teljes elállást kezdeményezett a rendeléskövető felületen (feladás után).', 'woo-elallas-kezelo'));
+                    $order->update_status($target_status, __('A vásárló a maradék termékekre is elállást kezdeményezett a rendeléskövető felületen.', 'woo-elallas-kezelo'));
                 }
             }
 
-            // Rendelési Jegyzet (Order Note) hozzáadása a terméklistával
-            $note = $is_partial_return ? __('Részleges lemondás/elállás. Érintett termékek:', 'woo-elallas-kezelo') . "\n" : __('Teljes lemondás/elállás. Érintett termékek:', 'woo-elallas-kezelo') . "\n";
+            // Rendelési Jegyzet (Order Note) hozzáadása a MOST lemondott terméklistával
+            $note = __('Új lemondás/elállás beküldve. Érintett termékek:', 'woo-elallas-kezelo') . "\n";
             foreach ($order->get_items() as $item) {
-                if (in_array($item->get_product_id(), $returned_items)) {
+                if (in_array($item->get_product_id(), $new_returned_items)) {
                     $note .= '- ' . $item->get_name() . ' (ID: ' . $item->get_product_id() . ')' . "\n";
                 }
             }
@@ -115,19 +133,22 @@ class WEJK_Process {
             
             $order->save();
 
-            // Vásárlói visszaigazoló és admin értesítő e-mail küldése (WC_Email)
-            $mailer = WC()->mailer();
-            $emails = $mailer->get_emails();
-            
-            if (isset($emails['WEJK_Email_Admin_Withdrawal'])) {
-                $emails['WEJK_Email_Admin_Withdrawal']->trigger($order_id, $is_pre_dispatch, $returned_items, $target_status);
-            }
-
-            // Vásárlói visszaigazoló e-mail küldése (WC_Email)
-            $mailer = WC()->mailer();
-            $emails = $mailer->get_emails();
-            if (isset($emails['WEJK_Email_Customer_Withdrawal'])) {
-                $emails['WEJK_Email_Customer_Withdrawal']->trigger($order_id, $is_pre_dispatch, $returned_items);
+            // E-mailek küldésének háttérbe (aszinkron) szervezése a gyorsabb válaszidő érdekében
+            if ( function_exists( 'as_enqueue_async_action' ) ) {
+                as_enqueue_async_action( 'wejk_process_withdrawal_emails', array(
+                    'args' => array(
+                        'order_id'              => $order_id,
+                        'is_pre_dispatch'       => $is_pre_dispatch,
+                        'merged_returned_items' => $merged_returned_items,
+                        'target_status'         => $target_status,
+                        'new_returned_items'    => $new_returned_items
+                    )
+                ));
+            } else {
+                // Tartalék megoldás (WP Cron), ha valamiért az Action Scheduler nem lenne elérhető
+                wp_schedule_single_event( time(), 'wejk_process_withdrawal_emails_fallback', array(
+                    $order_id, $is_pre_dispatch, $merged_returned_items, $target_status, $new_returned_items
+                ) );
             }
 
             // 5. Átirányítás a különálló sikeres képernyőre (ugyanarra az URL-re, de success paraméterrel)

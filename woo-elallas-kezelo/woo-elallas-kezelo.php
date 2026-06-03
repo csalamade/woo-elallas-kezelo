@@ -53,6 +53,38 @@ class WEJK_Plugin_Core {
         
         // E-mail osztály regisztrálása
         add_filter('woocommerce_email_classes', array($this, 'register_emails'));
+
+        // Aszinkron (háttérben futó) e-mail küldés hook-ok regisztrálása
+        add_action('wejk_process_withdrawal_emails', array($this, 'send_withdrawal_emails_async'), 10, 1);
+        add_action('wejk_process_withdrawal_emails_fallback', array($this, 'send_withdrawal_emails_fallback'), 10, 5);
+    }
+
+    public function send_withdrawal_emails_async($args) {
+        $this->execute_email_sending(
+            $args['order_id'], 
+            $args['is_pre_dispatch'], 
+            $args['merged_returned_items'], 
+            $args['target_status'], 
+            $args['new_returned_items']
+        );
+    }
+
+    public function send_withdrawal_emails_fallback($order_id, $is_pre_dispatch, $merged_returned_items, $target_status, $new_returned_items) {
+        $this->execute_email_sending($order_id, $is_pre_dispatch, $merged_returned_items, $target_status, $new_returned_items);
+    }
+
+    private function execute_email_sending($order_id, $is_pre_dispatch, $merged_returned_items, $target_status, $new_returned_items) {
+        // Inicializáljuk a mailert, ha még nem történt meg (háttérfolyamatokban előfordulhat)
+        $mailer = WC()->mailer();
+        $emails = $mailer->get_emails();
+        
+        if (isset($emails['WEJK_Email_Admin_Withdrawal'])) {
+            $emails['WEJK_Email_Admin_Withdrawal']->trigger($order_id, $is_pre_dispatch, $merged_returned_items, $target_status);
+        }
+
+        if (isset($emails['WEJK_Email_Customer_Withdrawal'])) {
+            $emails['WEJK_Email_Customer_Withdrawal']->trigger($order_id, $is_pre_dispatch, $new_returned_items);
+        }
     }
 
     public function register_emails($emails) {
