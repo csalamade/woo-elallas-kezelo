@@ -43,9 +43,14 @@ class WEJK_Admin {
     public function page_init() {
         register_setting('wejk_option_group', 'wejk_pre_dispatch_statuses');
         register_setting('wejk_option_group', 'wejk_pre_dispatch_action_status');
+        register_setting('wejk_option_group', 'wejk_post_dispatch_action_status');
         register_setting('wejk_option_group', 'wejk_shipped_status');
         register_setting('wejk_option_group', 'wejk_transit_time_days');
         register_setting('wejk_option_group', 'wejk_success_message');
+        register_setting('wejk_option_group', 'wejk_pre_dispatch_title');
+        register_setting('wejk_option_group', 'wejk_pre_dispatch_desc');
+        register_setting('wejk_option_group', 'wejk_post_dispatch_title');
+        register_setting('wejk_option_group', 'wejk_post_dispatch_desc');
 
         add_settings_section(
             'wejk_setting_section',
@@ -64,8 +69,16 @@ class WEJK_Admin {
 
         add_settings_field(
             'wejk_pre_dispatch_action_status',
-            __('Új státusz feladás előtti lemondáskor', 'woo-elallas-kezelo'),
+            __('Új státusz feladás előtti (teljes) lemondáskor', 'woo-elallas-kezelo'),
             array($this, 'pre_dispatch_action_status_callback'),
+            'wejk-setting-admin',
+            'wejk_setting_section'
+        );
+
+        add_settings_field(
+            'wejk_post_dispatch_action_status',
+            __('Új státusz feladás utáni elálláskor (vagy részleges lemondáskor)', 'woo-elallas-kezelo'),
+            array($this, 'post_dispatch_action_status_callback'),
             'wejk-setting-admin',
             'wejk_setting_section'
         );
@@ -104,6 +117,38 @@ class WEJK_Admin {
             'wejk_success_message',
             __('Sikeres beküldés üzenete', 'woo-elallas-kezelo'),
             array($this, 'success_message_callback'),
+            'wejk-setting-admin',
+            'wejk_text_setting_section'
+        );
+
+        add_settings_field(
+            'wejk_pre_dispatch_title',
+            __('Feladás előtti űrlap címe', 'woo-elallas-kezelo'),
+            array($this, 'pre_dispatch_title_callback'),
+            'wejk-setting-admin',
+            'wejk_text_setting_section'
+        );
+
+        add_settings_field(
+            'wejk_pre_dispatch_desc',
+            __('Feladás előtti űrlap leírása', 'woo-elallas-kezelo'),
+            array($this, 'pre_dispatch_desc_callback'),
+            'wejk-setting-admin',
+            'wejk_text_setting_section'
+        );
+
+        add_settings_field(
+            'wejk_post_dispatch_title',
+            __('Feladás utáni űrlap címe', 'woo-elallas-kezelo'),
+            array($this, 'post_dispatch_title_callback'),
+            'wejk-setting-admin',
+            'wejk_text_setting_section'
+        );
+
+        add_settings_field(
+            'wejk_post_dispatch_desc',
+            __('Feladás utáni űrlap leírása', 'woo-elallas-kezelo'),
+            array($this, 'post_dispatch_desc_callback'),
             'wejk-setting-admin',
             'wejk_text_setting_section'
         );
@@ -154,7 +199,20 @@ class WEJK_Admin {
             echo '<option value="' . esc_attr($status_key) . '" ' . $selected . '>' . esc_html($status) . '</option>';
         }
         echo '</select>';
-        echo '<p class="description">' . esc_html__('Milyen státuszba kerüljön a rendelés, ha feladás előtt mondják le?', 'woo-elallas-kezelo') . '</p>';
+        echo '<p class="description">' . esc_html__('Milyen státuszba kerüljön a rendelés, ha feladás előtt a teljes rendelést lemondják?', 'woo-elallas-kezelo') . '</p>';
+    }
+
+    public function post_dispatch_action_status_callback() {
+        $option = get_option('wejk_post_dispatch_action_status', 'on-hold');
+        $statuses = wc_get_order_statuses();
+        echo '<select name="wejk_post_dispatch_action_status">';
+        foreach ($statuses as $key => $status) {
+            $status_key = str_replace('wc-', '', $key);
+            $selected = ($option === $status_key) ? 'selected="selected"' : '';
+            echo '<option value="' . esc_attr($status_key) . '" ' . $selected . '>' . esc_html($status) . '</option>';
+        }
+        echo '</select>';
+        echo '<p class="description">' . esc_html__('Ide kerül a rendelés, ha a csomag már fel van adva és várni kell a visszaküldésre, VAGY ha csak részleges volt a lemondás. Ha zavaró az alapértelmezett "Felfüggesztve", nyugodtan válassz másikat.', 'woo-elallas-kezelo') . '</p>';
     }
 
     public function shipped_status_callback() {
@@ -181,5 +239,27 @@ class WEJK_Admin {
         $option = get_option('wejk_success_message', $default_msg);
         echo '<textarea name="wejk_success_message" rows="6" cols="60" style="width: 100%; max-width: 600px;">' . esc_textarea($option) . '</textarea>';
         echo '<p class="description">' . esc_html__('Ez a szöveg jelenik meg a vásárlónak, miután sikeresen elküldte az űrlapot. Hagyományos sortöréseket és egyszerű HTML kódokat (pl. &lt;strong&gt;) is használhatsz.', 'woo-elallas-kezelo') . '</p>';
+    }
+
+    public function pre_dispatch_title_callback() {
+        $option = get_option('wejk_pre_dispatch_title', __('Szeretné lemondani a rendelését?', 'woo-elallas-kezelo'));
+        echo '<input type="text" name="wejk_pre_dispatch_title" value="' . esc_attr($option) . '" style="width: 100%; max-width: 600px;" />';
+    }
+
+    public function pre_dispatch_desc_callback() {
+        $default_desc = __('Rendelése még feladás előtt áll, így most gyorsan és egyszerűen lemondhatja. A 45/2014. (II. 26.) Korm. rendelet 20. § (2) bek. alapján ez jogilag is elállásnak minősül.', 'woo-elallas-kezelo');
+        $option = get_option('wejk_pre_dispatch_desc', $default_desc);
+        echo '<textarea name="wejk_pre_dispatch_desc" rows="3" cols="60" style="width: 100%; max-width: 600px;">' . esc_textarea($option) . '</textarea>';
+    }
+
+    public function post_dispatch_title_callback() {
+        $option = get_option('wejk_post_dispatch_title', __('Szeretne élni az elállási jogával?', 'woo-elallas-kezelo'));
+        echo '<input type="text" name="wejk_post_dispatch_title" value="' . esc_attr($option) . '" style="width: 100%; max-width: 600px;" />';
+    }
+
+    public function post_dispatch_desc_callback() {
+        $default_desc = __('Erre a rendelésre még érvényes a 14 napos elállási jog. A gombra kattintva jelezheti felénk visszaküldési szándékát.', 'woo-elallas-kezelo');
+        $option = get_option('wejk_post_dispatch_desc', $default_desc);
+        echo '<textarea name="wejk_post_dispatch_desc" rows="3" cols="60" style="width: 100%; max-width: 600px;">' . esc_textarea($option) . '</textarea>';
     }
 }

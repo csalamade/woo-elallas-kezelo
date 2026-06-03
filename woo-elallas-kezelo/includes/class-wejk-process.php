@@ -104,20 +104,27 @@ class WEJK_Process {
             $merged_returned_items = array_unique(array_merge($existing_returned, $new_returned_items));
             $order->update_meta_data('_wejk_returned_items', $merged_returned_items);
             
+            // Rendelésben lévő egyedi termék ID-k kigyűjtése
+            $order_product_ids = array();
+            foreach ($order->get_items() as $item) {
+                $order_product_ids[] = $item->get_product_id();
+            }
+            $unique_order_product_ids = array_unique($order_product_ids);
+
             // Részleges lemondás vizsgálata az összes lemondott termék alapján
-            $is_partial_return = count($merged_returned_items) < count($order->get_items());
+            $is_partial_return = count($merged_returned_items) < count($unique_order_product_ids);
 
             if ($is_partial_return) {
-                // Részleges esetén mindig felfüggesztve (on-hold)
-                $target_status = 'on-hold';
+                // Részleges esetén az új beállítás szerinti státusz
+                $target_status = get_option('wejk_post_dispatch_action_status', 'on-hold');
                 $order->update_status($target_status, __('Újabb részleges elállás/lemondás érkezett a rendeléskövető felületen.', 'woo-elallas-kezelo'));
             } else {
                 if ($is_pre_dispatch) {
                     $target_status = get_option('wejk_pre_dispatch_action_status', 'cancelled');
                     $order->update_status($target_status, __('A vásárló a maradék termékeket is lemondta feladás előtt a rendeléskövető felületen.', 'woo-elallas-kezelo'));
                 } else {
-                    // Alapértelmezett on-hold a teljesített utáni teljes elállásra
-                    $target_status = 'on-hold';
+                    // Feladás utáni teljes elállás új beállítás szerinti státusza
+                    $target_status = get_option('wejk_post_dispatch_action_status', 'on-hold');
                     $order->update_status($target_status, __('A vásárló a maradék termékekre is elállást kezdeményezett a rendeléskövető felületen.', 'woo-elallas-kezelo'));
                 }
             }

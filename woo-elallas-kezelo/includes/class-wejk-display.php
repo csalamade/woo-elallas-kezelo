@@ -67,13 +67,13 @@ class WEJK_Display {
 
         // Gomb és az elrejtett űrlap
         if ($is_pre_dispatch) {
-            $title = __('Szeretné lemondani a rendelését?', 'woo-elallas-kezelo');
-            $desc = __('Rendelése még feladás előtt áll, így most gyorsan és egyszerűen lemondhatja. A 45/2014. (II. 26.) Korm. rendelet 20. § (2) bek. alapján ez jogilag is elállásnak minősül.', 'woo-elallas-kezelo');
+            $title = get_option('wejk_pre_dispatch_title', __('Szeretné lemondani a rendelését?', 'woo-elallas-kezelo'));
+            $desc = get_option('wejk_pre_dispatch_desc', __('Rendelése még feladás előtt áll, így most gyorsan és egyszerűen lemondhatja. A 45/2014. (II. 26.) Korm. rendelet 20. § (2) bek. alapján ez jogilag is elállásnak minősül.', 'woo-elallas-kezelo'));
             $btn_text = __('Rendelés lemondása (Elállás)', 'woo-elallas-kezelo');
             $confirm = __('Biztosan szeretné lemondani a rendelést még a feladás előtt?', 'woo-elallas-kezelo');
         } else {
-            $title = __('Szeretne élni az elállási jogával?', 'woo-elallas-kezelo');
-            $desc = __('Erre a rendelésre még érvényes a 14 napos elállási jog. A gombra kattintva jelezheti felénk visszaküldési szándékát.', 'woo-elallas-kezelo');
+            $title = get_option('wejk_post_dispatch_title', __('Szeretne élni az elállási jogával?', 'woo-elallas-kezelo'));
+            $desc = get_option('wejk_post_dispatch_desc', __('Erre a rendelésre még érvényes a 14 napos elállási jog. A gombra kattintva jelezheti felénk visszaküldési szándékát.', 'woo-elallas-kezelo'));
             $btn_text = __('Elállás bejelentése', 'woo-elallas-kezelo');
             $confirm = __('Biztosan szeretné kezdeményezni a rendelés visszaküldését?', 'woo-elallas-kezelo');
         }
