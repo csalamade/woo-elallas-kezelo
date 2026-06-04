@@ -22,7 +22,8 @@ $myUpdateChecker = PucFactory::buildUpdateChecker(
     __FILE__,
     'woo-elallas-kezelo'
 );
-#$myUpdateChecker->setBranch('main'); #relaseből tölti le ha ez nincsen ott
+
+$myUpdateChecker->getVcsApi()->enableReleaseAssets();
 
 
 
