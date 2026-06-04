@@ -156,6 +156,12 @@ class WEJK_Admin {
 
     public function section_info() {
         echo esc_html__('Állítsd be, hogy mely rendelési státuszokban lehetséges az elállás és a rendelés lemondása.', 'woo-elallas-kezelo');
+        echo '<div class="notice notice-info" style="margin-top: 15px; padding: 10px 15px;">';
+        echo '<strong>' . esc_html__('Vendég vásárlók tájékoztatása:', 'woo-elallas-kezelo') . '</strong> ';
+        echo esc_html__('A regisztráció nélkül vásárló vendégek az alapértelmezett WooCommerce rendeléskövető felületen keresztül indíthatják el az elállási folyamatot. Ennek biztosításához kérjük, hozzon létre egy új oldalt (pl. "Rendelés követése és elállás"), majd illessze be a ', 'woo-elallas-kezelo');
+        echo '<code>[woocommerce_order_tracking]</code>';
+        echo esc_html__(' shortcode-ot a tartalomba.', 'woo-elallas-kezelo');
+        echo '</div>';
     }
 
     public function text_section_info() {
@@ -179,14 +185,17 @@ class WEJK_Admin {
             $options = array();
         }
         $statuses = wc_get_order_statuses();
-        echo '<select name="wejk_pre_dispatch_statuses[]" multiple="multiple" style="width: 300px; height: 150px;">';
+        echo '<div class="wejk-checkbox-group" style="max-height: 180px; overflow-y: auto; border: 1px solid #8c8f94; padding: 10px; background: #fff; max-width: 400px; border-radius: 4px;">';
         foreach ($statuses as $key => $status) {
             $status_key = str_replace('wc-', '', $key);
-            $selected = in_array($status_key, $options) ? 'selected="selected"' : '';
-            echo '<option value="' . esc_attr($status_key) . '" ' . $selected . '>' . esc_html($status) . '</option>';
+            $checked = in_array($status_key, $options) ? 'checked="checked"' : '';
+            echo '<label style="display: block; margin-bottom: 8px; cursor: pointer; align-items: center;">';
+            echo '<input type="checkbox" name="wejk_pre_dispatch_statuses[]" value="' . esc_attr($status_key) . '" ' . $checked . ' style="margin-right: 8px; margin-top: 0;"> ';
+            echo esc_html($status);
+            echo '</label>';
         }
-        echo '</select>';
-        echo '<p class="description">' . esc_html__('Több státusz is választható (Ctrl/Cmd lenyomásával). Ezekben a státuszokban a vásárló feladás előtt lemondhatja a rendelést.', 'woo-elallas-kezelo') . '</p>';
+        echo '</div>';
+        echo '<p class="description" style="margin-top: 10px;">' . esc_html__('Több státusz is választható. Ezekben a státuszokban a vásárló feladás előtt lemondhatja a rendelést.', 'woo-elallas-kezelo') . '</p>';
     }
 
     public function pre_dispatch_action_status_callback() {

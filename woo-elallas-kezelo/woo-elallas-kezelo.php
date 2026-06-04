@@ -3,7 +3,7 @@
  * Plugin Name:       WooCommerce Elállási Kezelő
  * Plugin URI:        https://github.com/csalamade/woo-elallas-kezelo
  * Description:       Automatizált, 2026-os jogszabályoknak megfelelő elállási gomb és folyamatkezelő magánszemélyek (B2C) számára.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            1st-tech
  * Author URI:        https://1st-tech.hu
  * Text Domain:       woo-elallas-kezelo
