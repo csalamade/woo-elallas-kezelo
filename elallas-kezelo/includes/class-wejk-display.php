@@ -54,28 +54,26 @@ class WEJK_Display {
                 $transit_days = (int) get_option('wejk_transit_time_days', 2);
                 $start_time = $shipped_date + ($transit_days * DAY_IN_SECONDS);
                 
-                // Csak akkor számít lejártnak, ha el is kezdődött az időszak, ÉS eltelt 14 nap
-                if (time() >= $start_time) {
-                    $days_passed = (time() - $start_time) / DAY_IN_SECONDS;
-                    if ($days_passed > 14) {
-                        echo '<div class="woocommerce-info">' . esc_html__('Az indokolás nélküli 14 napos elállási határidő erre a rendelésre lejárt.', 'woo-elallas-kezelo') . '</div>';
-                        return;
-                    }
+                // Csak akkor számít lejártnak, ha eltelt 14 nap a kalkulált átvételi időpont óta
+                $days_passed = (time() - $start_time) / DAY_IN_SECONDS;
+                if ($days_passed > 14) {
+                    echo '<div class="woocommerce-info">' . esc_html__('Az indokolás nélküli 14 napos elállási határidő erre a rendelésre lejárt.', 'elallas-kezelo') . '</div>';
+                    return;
                 }
             }
         }
 
         // Gomb és az elrejtett űrlap
         if ($is_pre_dispatch) {
-            $title = get_option('wejk_pre_dispatch_title', __('Szeretné lemondani a rendelését?', 'woo-elallas-kezelo'));
-            $desc = get_option('wejk_pre_dispatch_desc', __('Rendelése még feladás előtt áll, így most gyorsan és egyszerűen lemondhatja. A 45/2014. (II. 26.) Korm. rendelet 20. § (2) bek. alapján ez jogilag is elállásnak minősül.', 'woo-elallas-kezelo'));
-            $btn_text = __('Rendelés lemondása (Elállás)', 'woo-elallas-kezelo');
-            $confirm = __('Biztosan szeretné lemondani a rendelést még a feladás előtt?', 'woo-elallas-kezelo');
+            $title = get_option('wejk_pre_dispatch_title', __('Szeretné lemondani a rendelését?', 'elallas-kezelo'));
+            $desc = get_option('wejk_pre_dispatch_desc', __('Rendelése még feladás előtt áll, így most gyorsan és egyszerűen lemondhatja. A 45/2014. (II. 26.) Korm. rendelet 20. § (2) bek. alapján ez jogilag is elállásnak minősül.', 'elallas-kezelo'));
+            $btn_text = __('Rendelés lemondása (Elállás)', 'elallas-kezelo');
+            $confirm = __('Biztosan szeretné lemondani a rendelést még a feladás előtt?', 'elallas-kezelo');
         } else {
-            $title = get_option('wejk_post_dispatch_title', __('Szeretne élni az elállási jogával?', 'woo-elallas-kezelo'));
-            $desc = get_option('wejk_post_dispatch_desc', __('Erre a rendelésre még érvényes a 14 napos elállási jog. A gombra kattintva jelezheti felénk visszaküldési szándékát.', 'woo-elallas-kezelo'));
-            $btn_text = __('Elállás bejelentése', 'woo-elallas-kezelo');
-            $confirm = __('Biztosan szeretné kezdeményezni a rendelés visszaküldését?', 'woo-elallas-kezelo');
+            $title = get_option('wejk_post_dispatch_title', __('Szeretne élni az elállási jogával?', 'elallas-kezelo'));
+            $desc = get_option('wejk_post_dispatch_desc', __('Erre a rendelésre még érvényes a 14 napos elállási jog. A gombra kattintva jelezheti felénk visszaküldési szándékát.', 'elallas-kezelo'));
+            $btn_text = __('Elállás bejelentése', 'elallas-kezelo');
+            $confirm = __('Biztosan szeretné kezdeményezni a rendelés visszaküldését?', 'elallas-kezelo');
         }
         ?>
         <div class="wejk-return-container" style="margin-top: 30px; padding: 20px; background: #f9f9f9; border-left: 4px solid #007cba;">
@@ -83,11 +81,11 @@ class WEJK_Display {
             if (isset($_GET['wejk_error'])) {
                 $error_msg = '';
                 if ($_GET['wejk_error'] === 'no_products') {
-                    $error_msg = __('Kérjük, válasszon ki legalább egy terméket az elálláshoz/lemondáshoz!', 'woo-elallas-kezelo');
+                    $error_msg = __('Kérjük, válasszon ki legalább egy terméket az elálláshoz/lemondáshoz!', 'elallas-kezelo');
                 } elseif ($_GET['wejk_error'] === 'invalid_status') {
-                    $error_msg = __('Ezt a rendelést jelenleg nem lehet lemondani vagy az elállási folyamat már elkezdődött.', 'woo-elallas-kezelo');
+                    $error_msg = __('Ezt a rendelést jelenleg nem lehet lemondani vagy az elállási folyamat már elkezdődött.', 'elallas-kezelo');
                 } elseif ($_GET['wejk_error'] === 'security') {
-                    $error_msg = __('Biztonsági hiba történt. Kérjük, próbálja újra.', 'woo-elallas-kezelo');
+                    $error_msg = __('Biztonsági hiba történt. Kérjük, próbálja újra.', 'elallas-kezelo');
                 }
                 
                 if (!empty($error_msg)) {
@@ -120,13 +118,13 @@ class WEJK_Display {
                     }
 
                     if ($all_returned) {
-                        echo '<p style="color: #155724; font-weight: bold;">' . esc_html__('Ebből a rendelésből már minden tételt lemondott / visszaküldött.', 'woo-elallas-kezelo') . '</p>';
+                        echo '<p style="color: #155724; font-weight: bold;">' . esc_html__('Ebből a rendelésből már minden tételt lemondott / visszaküldött.', 'elallas-kezelo') . '</p>';
                         echo '</div></form></div>';
                         return; // Kilépünk, nem mutatjuk a beküldés gombot
                     }
                     ?>
 
-                    <h4 style="margin-top: 0;"><?php esc_html_e('Válassza ki az érintett termékeket:', 'woo-elallas-kezelo'); ?></h4>
+                    <h4 style="margin-top: 0;"><?php esc_html_e('Válassza ki az érintett termékeket:', 'elallas-kezelo'); ?></h4>
                     <?php
                     foreach ($order->get_items() as $item_id => $item) {
                         $product_id = $item->get_product_id();
@@ -138,7 +136,7 @@ class WEJK_Display {
                         echo '<input type="checkbox" name="wejk_returned_products[]" value="' . esc_attr($product_id) . '" id="wejk_item_' . esc_attr($item_id) . '" ' . disabled($is_returned, true, false) . ' ' . checked($is_returned, true, false) . '>';
                         echo '<span style="margin-left: 8px;">' . esc_html($item->get_name()) . ' (x' . esc_html($item->get_quantity()) . ')</span>';
                         if ($is_returned) {
-                            echo '<span style="margin-left: 10px; color: #dc3232; font-size: 0.9em; font-weight: bold;">' . esc_html__('(Már lemondva)', 'woo-elallas-kezelo') . '</span>';
+                            echo '<span style="margin-left: 10px; color: #dc3232; font-size: 0.9em; font-weight: bold;">' . esc_html__('(Már lemondva)', 'elallas-kezelo') . '</span>';
                         }
                         echo '</label>';
                         echo '</div>';
@@ -157,7 +155,7 @@ class WEJK_Display {
                             var checkboxes = form.querySelectorAll('input[name="wejk_returned_products[]"]:checked');
                             if (checkboxes.length === 0) {
                                 e.preventDefault();
-                                alert('<?php esc_attr_e('Kérjük, válasszon ki legalább egy terméket az elálláshoz/lemondáshoz!', 'woo-elallas-kezelo'); ?>');
+                                alert('<?php esc_attr_e('Kérjük, válasszon ki legalább egy terméket az elálláshoz/lemondáshoz!', 'elallas-kezelo'); ?>');
                                 return false;
                             }
                             if (!confirm('<?php echo esc_attr($confirm); ?>')) {

@@ -17,8 +17,8 @@ class WEJK_Email_Customer_Withdrawal extends WC_Email {
         $this->id             = 'wejk_email_customer_withdrawal';
         $this->customer_email = true;
         
-        $this->title          = __('Elállás / Lemondás visszaigazolása', 'woo-elallas-kezelo');
-        $this->description    = __('Ezt az e-mailt a vásárló kapja, miután sikeresen beküldte az elállási vagy lemondási nyilatkozatot a weboldalon.', 'woo-elallas-kezelo');
+        $this->title          = __('Elállás / Lemondás visszaigazolása', 'elallas-kezelo');
+        $this->description    = __('Ezt az e-mailt a vásárló kapja, miután sikeresen beküldte az elállási vagy lemondási nyilatkozatot a weboldalon.', 'elallas-kezelo');
         
         $this->template_html  = 'emails/customer-withdrawal.php';
         $this->template_plain = 'emails/plain/customer-withdrawal.php';
@@ -62,11 +62,11 @@ class WEJK_Email_Customer_Withdrawal extends WC_Email {
     }
 
     public function get_default_subject() {
-        return __('Visszaigazolás az elállási/lemondási nyilatkozatról - Rendelés #{order_number}', 'woo-elallas-kezelo');
+        return __('Visszaigazolás az elállási/lemondási nyilatkozatról - Rendelés #{order_number}', 'elallas-kezelo');
     }
 
     public function get_default_heading() {
-        return __('Elállási nyilatkozat rögzítve', 'woo-elallas-kezelo');
+        return __('Elállási nyilatkozat rögzítve', 'elallas-kezelo');
     }
 
     public function get_content_html() {
@@ -77,19 +77,19 @@ class WEJK_Email_Customer_Withdrawal extends WC_Email {
         // WooCommerce alap e-mail header
         do_action('woocommerce_email_header', $email_heading, $this);
 
-        echo '<p>' . esc_html__('Tisztelt Vásárlónk,', 'woo-elallas-kezelo') . '</p>';
-        echo '<p>' . esc_html__('Ezúton igazoljuk vissza, hogy a mai napon rögzítettük az elállási / lemondási nyilatkozatát a(z) ', 'woo-elallas-kezelo') . '<strong>' . esc_html($this->object->get_order_number()) . '</strong>' . esc_html__(' számú rendeléssel kapcsolatban.', 'woo-elallas-kezelo') . '</p>';
+        echo '<p>' . esc_html__('Tisztelt Vásárlónk,', 'elallas-kezelo') . '</p>';
+        echo '<p>' . esc_html__('Ezúton igazoljuk vissza, hogy a mai napon rögzítettük az elállási / lemondási nyilatkozatát a(z) ', 'elallas-kezelo') . '<strong>' . esc_html($this->object->get_order_number()) . '</strong>' . esc_html__(' számú rendeléssel kapcsolatban.', 'elallas-kezelo') . '</p>';
         
-        echo '<h3>' . esc_html__('Az elállás / lemondás részletei:', 'woo-elallas-kezelo') . '</h3>';
+        echo '<h3>' . esc_html__('Az elállás / lemondás részletei:', 'elallas-kezelo') . '</h3>';
         echo '<ul>';
-        echo '<li><strong>' . esc_html__('Beküldés időpontja:', 'woo-elallas-kezelo') . '</strong> ' . esc_html(wp_date('Y-m-d H:i:s')) . '</li>';
-        echo '<li><strong>' . esc_html__('Vásárló neve:', 'woo-elallas-kezelo') . '</strong> ' . esc_html($this->object->get_formatted_billing_full_name()) . '</li>';
-        echo '<li><strong>' . esc_html__('Vásárló e-mail címe:', 'woo-elallas-kezelo') . '</strong> ' . esc_html($this->object->get_billing_email()) . '</li>';
+        echo '<li><strong>' . esc_html__('Beküldés időpontja:', 'elallas-kezelo') . '</strong> ' . esc_html(wp_date('Y-m-d H:i:s')) . '</li>';
+        echo '<li><strong>' . esc_html__('Vásárló neve:', 'elallas-kezelo') . '</strong> ' . esc_html($this->object->get_formatted_billing_full_name()) . '</li>';
+        echo '<li><strong>' . esc_html__('Vásárló e-mail címe:', 'elallas-kezelo') . '</strong> ' . esc_html($this->object->get_billing_email()) . '</li>';
         echo '</ul>';
 
-        echo '<h3>' . esc_html__('Érintett termékek:', 'woo-elallas-kezelo') . '</h3>';
+        echo '<h3>' . esc_html__('Érintett termékek:', 'elallas-kezelo') . '</h3>';
         echo '<table cellspacing="0" cellpadding="6" style="width: 100%; border: 1px solid #eee;">';
-        echo '<thead><tr><th style="text-align:left; border: 1px solid #eee;">' . esc_html__('Termék', 'woo-elallas-kezelo') . '</th><th style="text-align:left; border: 1px solid #eee;">' . esc_html__('Mennyiség', 'woo-elallas-kezelo') . '</th></tr></thead><tbody>';
+        echo '<thead><tr><th style="text-align:left; border: 1px solid #eee;">' . esc_html__('Termék', 'elallas-kezelo') . '</th><th style="text-align:left; border: 1px solid #eee;">' . esc_html__('Mennyiség', 'elallas-kezelo') . '</th></tr></thead><tbody>';
         
         $actual_returned_items = $this->returned_items;
         if (empty($actual_returned_items)) {
@@ -111,16 +111,16 @@ class WEJK_Email_Customer_Withdrawal extends WC_Email {
         }
         echo '</tbody></table>';
 
-        echo '<h3>' . esc_html__('További lépések:', 'woo-elallas-kezelo') . '</h3>';
+        echo '<h3>' . esc_html__('További lépések:', 'elallas-kezelo') . '</h3>';
         
         $additional_content = $this->get_option('additional_content');
         if ($additional_content) {
             echo wp_kses_post(wpautop(wptexturize($additional_content)));
         } else {
             if ($this->is_pre_dispatch) {
-                echo '<p>' . esc_html__('Mivel a rendelés még feladás előtt állt, a megrendelést töröltük. Ha a rendelés összegét már kifizette, munkatársaink hamarosan intézkednek a vételár visszatérítéséről. További teendője nincs.', 'woo-elallas-kezelo') . '</p>';
+                echo '<p>' . esc_html__('Mivel a rendelés még feladás előtt állt, a megrendelést töröltük. Ha a rendelés összegét már kifizette, munkatársaink hamarosan intézkednek a vételár visszatérítéséről. További teendője nincs.', 'elallas-kezelo') . '</p>';
             } else {
-                echo '<p>' . esc_html__('Kérjük, juttassa vissza a megjelölt terméke(ke)t az ÁSZF-ben megadott visszaküldési címünkre 14 napon belül. A csomag beérkezése és ellenőrzése után visszautaljuk az összeget.', 'woo-elallas-kezelo') . '</p>';
+                echo '<p>' . esc_html__('Kérjük, juttassa vissza a megjelölt terméke(ke)t az ÁSZF-ben megadott visszaküldési címünkre 14 napon belül. A csomag beérkezése és ellenőrzése után visszautaljuk az összeget.', 'elallas-kezelo') . '</p>';
             }
         }
 
@@ -129,48 +129,52 @@ class WEJK_Email_Customer_Withdrawal extends WC_Email {
         return ob_get_clean();
     }
 
+    public function get_content_plain() {
+        return wp_strip_all_tags($this->get_content_html());
+    }
+
     public function init_form_fields() {
         $this->form_fields = array(
             'enabled' => array(
-                'title'   => __('Bekapcsolás/Kikapcsolás', 'woo-elallas-kezelo'),
+                'title'   => __('Bekapcsolás/Kikapcsolás', 'elallas-kezelo'),
                 'type'    => 'checkbox',
-                'label'   => __('E-mail értesítés engedélyezése', 'woo-elallas-kezelo'),
+                'label'   => __('E-mail értesítés engedélyezése', 'elallas-kezelo'),
                 'default' => 'yes',
             ),
             'subject' => array(
-                'title'       => __('Tárgy', 'woo-elallas-kezelo'),
+                'title'       => __('Tárgy', 'elallas-kezelo'),
                 'type'        => 'text',
                 'desc_tip'    => true,
                 // translators: %s: Default subject.
-                'description' => sprintf(__('Alapértelmezett: <code>%s</code>.', 'woo-elallas-kezelo'), $this->get_default_subject()),
+                'description' => sprintf(__('Alapértelmezett: <code>%s</code>.', 'elallas-kezelo'), $this->get_default_subject()),
                 'placeholder' => $this->get_default_subject(),
                 'default'     => '',
             ),
             'heading' => array(
-                'title'       => __('Fejléc', 'woo-elallas-kezelo'),
+                'title'       => __('Fejléc', 'elallas-kezelo'),
                 'type'        => 'text',
                 'desc_tip'    => true,
                 // translators: %s: Default heading.
-                'description' => sprintf(__('Alapértelmezett: <code>%s</code>.', 'woo-elallas-kezelo'), $this->get_default_heading()),
+                'description' => sprintf(__('Alapértelmezett: <code>%s</code>.', 'elallas-kezelo'), $this->get_default_heading()),
                 'placeholder' => $this->get_default_heading(),
                 'default'     => '',
             ),
             'additional_content' => array(
-                'title'       => __('Egyedi "További lépések" szöveg', 'woo-elallas-kezelo'),
-                'description' => __('Ez a szöveg jelenik meg az e-mail alján. Ha üresen hagyod, egy alapértelmezett szöveg jelenik meg a rendelés státuszától (feladás előtti vagy utáni) függően.', 'woo-elallas-kezelo'),
+                'title'       => __('Egyedi "További lépések" szöveg', 'elallas-kezelo'),
+                'description' => __('Ez a szöveg jelenik meg az e-mail alján. Ha üresen hagyod, egy alapértelmezett szöveg jelenik meg a rendelés státuszától (feladás előtti vagy utáni) függően.', 'elallas-kezelo'),
                 'type'        => 'textarea',
                 'default'     => '',
                 'desc_tip'    => true,
             ),
             'email_type' => array(
-                'title'       => __('E-mail formátuma', 'woo-elallas-kezelo'),
+                'title'       => __('E-mail formátuma', 'elallas-kezelo'),
                 'type'        => 'select',
-                'description' => __('Válaszd ki az e-mail formátumát.', 'woo-elallas-kezelo'),
+                'description' => __('Válaszd ki az e-mail formátumát.', 'elallas-kezelo'),
                 'default'     => 'html',
                 'class'       => 'email_type wc-enhanced-select',
                 'options'     => array(
-                    'html'      => __('HTML', 'woo-elallas-kezelo'),
-                    'plain'     => __('Egyszerű szöveg', 'woo-elallas-kezelo'),
+                    'html'      => __('HTML', 'elallas-kezelo'),
+                    'plain'     => __('Egyszerű szöveg', 'elallas-kezelo'),
                 ),
             ),
         );

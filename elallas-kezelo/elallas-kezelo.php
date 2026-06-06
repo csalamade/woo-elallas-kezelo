@@ -8,28 +8,17 @@
  * Author URI:        https://1st-tech.hu
  * License:           GPLv2 or later
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       woo-elallas-kezelo
+ * Text Domain:       elallas-kezelo
+ * Requires PHP:      7.4
+ * Requires at least: 6.0
+ * WC requires at least: 7.0
+ * WC tested up to:   10.8
  */
 
 // Megakadályozzuk a közvetlen hozzáférést
 if (!defined('ABSPATH')) {
     exit;
 }
-
-// GitHub frissítés ellenőrző - Csak akkor fut le, ha a mappa létezik
-// (A WordPress.org-ra feltöltött verzióból ez a mappa hiányozni fog)
-if (file_exists(plugin_dir_path(__FILE__) . 'plugin-update-checker/plugin-update-checker.php')) {
-    require plugin_dir_path(__FILE__) . 'plugin-update-checker/plugin-update-checker.php';
-    $myUpdateChecker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
-        'https://github.com/csalamade/woo-elallas-kezelo/',
-        __FILE__,
-        'woo-elallas-kezelo'
-    );
-    $myUpdateChecker->getVcsApi()->enableReleaseAssets();
-}
-
-
-
 
 class WEJK_Plugin_Core {
 
@@ -71,19 +60,9 @@ class WEJK_Plugin_Core {
         // E-mail osztály regisztrálása
         add_filter('woocommerce_email_classes', array($this, 'register_emails'));
 
-        // Aszinkron (háttérben futó) e-mail küldés hook-ok regisztrálása
-        add_action('wejk_process_withdrawal_emails', array($this, 'send_withdrawal_emails_async'), 10, 1);
+        // Aszinkron (háttérben futó) e-mail küldés hook-ok regisztrálása (Action Scheduler és WP Cron fallback)
+        add_action('wejk_process_withdrawal_emails', array($this, 'send_withdrawal_emails_fallback'), 10, 5);
         add_action('wejk_process_withdrawal_emails_fallback', array($this, 'send_withdrawal_emails_fallback'), 10, 5);
-    }
-
-    public function send_withdrawal_emails_async($args) {
-        $this->execute_email_sending(
-            $args['order_id'], 
-            $args['is_pre_dispatch'], 
-            $args['merged_returned_items'], 
-            $args['target_status'], 
-            $args['new_returned_items']
-        );
     }
 
     public function send_withdrawal_emails_fallback($order_id, $is_pre_dispatch, $merged_returned_items, $target_status, $new_returned_items) {
