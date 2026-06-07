@@ -84,6 +84,7 @@ class WEJK_Email_Admin_Withdrawal extends WC_Email {
         $email_heading = $this->get_heading();
         
         // WooCommerce alap e-mail header
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
         do_action('woocommerce_email_header', $email_heading, $this);
 
         echo '<p>' . esc_html__('Kedves Admin!', 'elallas-kezelo') . '</p>';
@@ -134,6 +135,7 @@ class WEJK_Email_Admin_Withdrawal extends WC_Email {
             echo '<p>' . esc_html__('A rendelés státusza automatikusan \'Felfüggesztve\' (on-hold) állapotra módosult. Kérjük, vedd fel a kapcsolatot a vásárlóval a további teendőkkel kapcsolatban.', 'elallas-kezelo') . '</p>';
         }
 
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
         do_action('woocommerce_email_footer', $this);
         
         return ob_get_clean();

@@ -75,6 +75,7 @@ class WEJK_Email_Customer_Withdrawal extends WC_Email {
         $email_heading = $this->get_heading();
         
         // WooCommerce alap e-mail header
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
         do_action('woocommerce_email_header', $email_heading, $this);
 
         echo '<p>' . esc_html__('Tisztelt Vásárlónk,', 'elallas-kezelo') . '</p>';
@@ -123,7 +124,7 @@ class WEJK_Email_Customer_Withdrawal extends WC_Email {
                 echo '<p>' . esc_html__('Kérjük, juttassa vissza a megjelölt terméke(ke)t az ÁSZF-ben megadott visszaküldési címünkre 14 napon belül. A csomag beérkezése és ellenőrzése után visszautaljuk az összeget.', 'elallas-kezelo') . '</p>';
             }
         }
-
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
         do_action('woocommerce_email_footer', $this);
         
         return ob_get_clean();
