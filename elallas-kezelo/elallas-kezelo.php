@@ -93,10 +93,14 @@ class WEJK_Plugin_Core {
         return $emails;
     }
 
+    // TODO: áthelyezni WEJK_Process osztályba ha a plugin bővül
     public function save_shipped_date($order_id, $from_status, $to_status, $order) {
+        // Megjegyzés: ez a függvény áthelyezhető a WEJK_Process osztályba
+        // ha a plugin bővítésre kerül, jelenleg a fő fájlban marad
+        // $from_status és $order_id a hook által átadott, de nem szükséges paraméterek
         $shipped_status = get_option('wejk_shipped_status', 'completed');
         
-        if ($to_status === $shipped_status) {
+        if ($to_status === $shipped_status && empty($order->get_meta('_wejk_shipped_date'))) {
             // Rögzítjük az aktuális időbélyeget
             $order->update_meta_data('_wejk_shipped_date', time());
             $order->save();
