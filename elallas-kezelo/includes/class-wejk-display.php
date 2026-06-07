@@ -144,28 +144,7 @@ class WEJK_Display {
                     ?>
                 </div>
 
-                <button type="submit" class="button alt wejk-submit-btn-<?php echo esc_attr($order->get_id()); ?>" name="process_return_request"><?php echo esc_html($btn_text); ?></button>
-                
-                <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    var btn = document.querySelector('.wejk-submit-btn-<?php echo esc_attr($order->get_id()); ?>');
-                    if (btn) {
-                        btn.addEventListener('click', function(e) {
-                            var form = this.closest('form');
-                            var checkboxes = form.querySelectorAll('input[name="wejk_returned_products[]"]:checked');
-                            if (checkboxes.length === 0) {
-                                e.preventDefault();
-                                alert('<?php esc_attr_e('Kérjük, válasszon ki legalább egy terméket az elálláshoz/lemondáshoz!', 'elallas-kezelo'); ?>');
-                                return false;
-                            }
-                            if (!confirm('<?php echo esc_attr($confirm); ?>')) {
-                                e.preventDefault();
-                                return false;
-                            }
-                        });
-                    }
-                });
-                </script>
+                <button type="submit" class="button alt wejk-submit-btn" name="process_return_request" data-confirm="<?php echo esc_attr($confirm); ?>" data-alert="<?php esc_attr_e('Kérjük, válasszon ki legalább egy terméket az elálláshoz/lemondáshoz!', 'elallas-kezelo'); ?>"><?php echo esc_html($btn_text); ?></button>
             </form>
         </div>
         <?php

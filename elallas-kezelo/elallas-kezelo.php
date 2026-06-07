@@ -63,6 +63,26 @@ class WEJK_Plugin_Core {
         // Aszinkron (háttérben futó) e-mail küldés hook-ok regisztrálása (Action Scheduler és WP Cron fallback)
         add_action('wejk_process_withdrawal_emails', array($this, 'send_withdrawal_emails_fallback'), 10, 5);
         add_action('wejk_process_withdrawal_emails_fallback', array($this, 'send_withdrawal_emails_fallback'), 10, 5);
+        
+        // Frontend scriptek betöltése
+        add_action('wp_enqueue_scripts', array($this, 'enqueue_frontend_scripts'));
+    }
+
+    public function enqueue_frontend_scripts() {
+        // Csak WooCommerce rendelés oldalakon töltjük be
+        if (
+        !is_account_page() &&
+        !is_page(wc_get_page_id('order-tracking'))
+            ) {
+        return;
+        }
+        wp_enqueue_script(
+            'wejk-frontend',
+            plugin_dir_url(__FILE__) . 'assets/js/wejk-frontend.js',
+            array(),
+            '1.0.1',
+            true
+        );
     }
 
     public function send_withdrawal_emails_fallback($order_id, $is_pre_dispatch, $merged_returned_items, $target_status, $new_returned_items) {
