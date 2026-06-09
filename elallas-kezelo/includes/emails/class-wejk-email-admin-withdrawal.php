@@ -13,6 +13,10 @@ if (!class_exists('WC_Email')) {
 
 class WEJK_Email_Admin_Withdrawal extends WC_Email {
 
+    public bool $is_pre_dispatch = false;
+    public array $returned_items = array();
+    public string $target_status = '';
+
     public function __construct() {
         $this->id             = 'wejk_email_admin_withdrawal';
         $this->customer_email = false;
@@ -29,9 +33,6 @@ class WEJK_Email_Admin_Withdrawal extends WC_Email {
             '{order_number}' => '',
         );
 
-        $this->is_pre_dispatch = false;
-        $this->returned_items = array();
-        $this->target_status = '';
 
         // Alapértelmezett beállítások betöltése
         parent::__construct();
