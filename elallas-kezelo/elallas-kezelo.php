@@ -21,16 +21,6 @@ if (!defined('ABSPATH')) {
 }
 
 
-// TODO: Törölni ezt a blokkot a WP.org végleges feltöltésnél!
-require 'plugin-update-checker/plugin-update-checker.php';
-use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
-
-$myUpdateChecker = PucFactory::buildUpdateChecker(
-    'https://github.com/csalamade/woo-elallas-kezelo/',
-    __FILE__,
-    'elallas-kezelo'
-);
-
 $myUpdateChecker->getVcsApi()->enableReleaseAssets();
 
 

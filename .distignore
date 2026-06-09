@@ -1,8 +1,8 @@
-.git
-.github
-.gitignore
-.distignore
-woo-elallas-kezelo/plugin-update-checker
-woo-elallas-kezelo-*.zip
 AI_CONTEXT.md
 README.md
+/.wordpress-org
+/.git
+/.github
+/node_modules
+.distignore
+.gitignore

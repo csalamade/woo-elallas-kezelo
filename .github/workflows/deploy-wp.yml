@@ -1,23 +1,21 @@
-name: Deploy to WordPress Plugin Directory
-
+name: Deploy to WordPress.org SVN
 on:
   release:
     types: [published]
 
 jobs:
   deploy:
-    name: Deploy to WordPress.org
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Source Code
+    - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: WordPress Plugin Deploy
+    - name: WordPress.org Plugin Deploy
       uses: 10up/action-wordpress-plugin-deploy@stable
       with:
         generate-zip: true
       env:
         SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
         SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-        PLUGIN_DIR: woo-elallas-kezelo
-        SLUG: woo-elallas-kezelo
+        SLUG: elallas-kezelo
+        BUILD_DIR: elallas-kezelo
