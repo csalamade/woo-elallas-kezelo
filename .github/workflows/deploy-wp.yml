@@ -11,7 +11,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: WordPress.org Plugin Deploy
+    - name: WordPress.org Plugin Deploy (release)
+      if: github.event_name == 'release'
       uses: 10up/action-wordpress-plugin-deploy@stable
       with:
         generate-zip: true
@@ -20,3 +21,15 @@ jobs:
         SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
         SLUG: elallas-kezelo
         BUILD_DIR: elallas-kezelo
+
+    - name: WordPress.org Plugin Deploy (manual)
+      if: github.event_name == 'workflow_dispatch'
+      uses: 10up/action-wordpress-plugin-deploy@stable
+      with:
+        generate-zip: true
+      env:
+        SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+        SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+        SLUG: elallas-kezelo
+        BUILD_DIR: elallas-kezelo
+        VERSION: ${{ github.ref_name }}
