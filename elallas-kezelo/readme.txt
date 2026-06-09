@@ -6,7 +6,7 @@ Tested up to: 7.0
 Requires PHP: 7.4
 WC requires at least: 7.0
 WC tested up to: 10.8
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -59,6 +59,11 @@ Yes, the extension is fully compatible with the new HPOS database structure.
 3. Automatic order notes in the admin panel upon withdrawal.
 
 == Changelog ==
+
+= 1.0.1 =
+* change submit button name
+* standardization
+
 
 = 1.0.1 =
 * Removed update checker for WordPress.org compliance.
