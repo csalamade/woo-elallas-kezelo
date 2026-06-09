@@ -60,7 +60,8 @@ Yes, the extension is fully compatible with the new HPOS database structure.
 
 == Changelog ==
 
-= 1.0.1 =
+
+= 1.0.2 =
 * change submit button name
 * standardization
 
