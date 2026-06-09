@@ -71,12 +71,12 @@ class WEJK_Display
         if ($is_pre_dispatch) {
             $title = get_option('wejk_pre_dispatch_title', __('Szeretné lemondani a rendelését?', 'elallas-kezelo'));
             $desc = get_option('wejk_pre_dispatch_desc', __('Rendelése még feladás előtt áll, így most gyorsan és egyszerűen lemondhatja. A 45/2014. (II. 26.) Korm. rendelet 20. § (2) bek. alapján ez jogilag is elállásnak minősül.', 'elallas-kezelo'));
-            $btn_text = __('Rendelés lemondása (Elállás)', 'elallas-kezelo');
+            $btn_text = __('Elállás megerősítése', 'elallas-kezelo');
             $confirm = __('Biztosan szeretné lemondani a rendelést még a feladás előtt?', 'elallas-kezelo');
         } else {
             $title = get_option('wejk_post_dispatch_title', __('Szeretne élni az elállási jogával?', 'elallas-kezelo'));
             $desc = get_option('wejk_post_dispatch_desc', __('Erre a rendelésre még érvényes a 14 napos elállási jog. A gombra kattintva jelezheti felénk visszaküldési szándékát.', 'elallas-kezelo'));
-            $btn_text = __('Elállás bejelentése', 'elallas-kezelo');
+            $btn_text = __('Elállás megerősítése', 'elallas-kezelo');
             $confirm = __('Biztosan szeretné kezdeményezni a rendelés visszaküldését?', 'elallas-kezelo');
         }
 ?>
@@ -107,6 +107,15 @@ class WEJK_Display
                 <!-- Biztonsági kulcs generálása specifikusan ehhez a rendeléshez -->
                 <?php wp_nonce_field('elallas_action_' . $order->get_id(), 'elallas_nonce'); ?>
                 <input type="hidden" name="return_order_id" value="<?php echo esc_attr($order->get_id()); ?>">
+
+                <div class="wejk-consumer-data" style="margin: 15px 0; padding: 15px; background: #fff; border: 1px solid #ddd;">
+                    <h4 style="margin-top: 0;"><?php esc_html_e('Nyilatkozattevő adatai:', 'elallas-kezelo'); ?></h4>
+                    <p style="margin: 0; line-height: 1.6;">
+                        <strong><?php esc_html_e('Név:', 'elallas-kezelo'); ?></strong> <?php echo esc_html($order->get_billing_last_name() . ' ' . $order->get_billing_first_name()); ?><br>
+                        <strong><?php esc_html_e('E-mail cím:', 'elallas-kezelo'); ?></strong> <?php echo esc_html($order->get_billing_email()); ?><br>
+                        <strong><?php esc_html_e('Rendelésszám:', 'elallas-kezelo'); ?></strong> <?php echo esc_html($order->get_order_number()); ?>
+                    </p>
+                </div>
 
                 <div class="wejk-product-list" style="margin: 15px 0; padding: 15px; background: #fff; border: 1px solid #ddd;">
 

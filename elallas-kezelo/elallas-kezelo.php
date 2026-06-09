@@ -70,11 +70,11 @@ class WEJK_Plugin_Core {
 
     public function enqueue_frontend_scripts() {
         // Csak WooCommerce rendelés oldalakon töltjük be
-        if (
-        !is_account_page() &&
-        !is_page(wc_get_page_id('order-tracking'))
-            ) {
-        return;
+        global $post;
+        $is_tracking_shortcode = is_a($post, 'WP_Post') && has_shortcode($post->post_content, 'woocommerce_order_tracking');
+        
+        if (!is_account_page() && !is_page(wc_get_page_id('order-tracking')) && !$is_tracking_shortcode) {
+            return;
         }
         wp_enqueue_script(
             'wejk-frontend',

@@ -103,7 +103,8 @@ class WEJK_Process {
             }
 
             if (empty($new_returned_items)) {
-                $redirect_url = add_query_arg('wejk_error', 'no_products', wp_get_referer() ? wp_get_referer() : wc_get_endpoint_url('orders'));
+                $req_uri = isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '';
+                $redirect_url = add_query_arg('wejk_error', 'no_products', remove_query_arg(array('wejk_elallas_success'), esc_url_raw($req_uri)));
                 wp_safe_redirect($redirect_url);
                 exit;
             }
