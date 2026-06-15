@@ -64,6 +64,10 @@ Yes, the extension is fully compatible with the new HPOS database structure.
 
 == Changelog ==
 
+=1.0.5=
+* bugfix
+
+
 = 1.0.4 =
 * bugfix
 
