@@ -4,15 +4,23 @@ Egy professzionális WooCommerce bővítmény, amely automatizálja a vásárló
 
 ## Telepítés és Letöltés
 
-A bővítmény legfrissebb, azonnal telepíthető verzióját az alábbi gombra kattintva tudod letölteni:
+A bővítmény hivatalosan is elérhető a WordPress.org tárolójában! A legfrissebb, stabil verziót az alábbi gombra kattintva tudod letölteni, vagy akár közvetlenül a weboldalad admin felületéről is telepítheted.
 
-[![Letöltés](https://img.shields.io/badge/Letöltés-Legújabb_Verzió-success?style=for-the-badge&logo=github)](https://github.com/csalamade/woo-elallas-kezelo/releases/latest)
+[![Letöltés a WordPress.org-ról](https://img.shields.io/badge/WordPress.org-Letöltés-21759b?style=for-the-badge&logo=wordpress&logoColor=white)](https://wordpress.org/plugins/elallas-kezelo/)
 
-**Telepítési lépések:**
-1. Kattints a fenti zöld letöltés gombra.
-2. A megnyíló oldalon görgess le az **Assets** részhez.
-3. Töltsd le a **.zip** kiterjesztésű fájlt (NE a "Source code" feliratút!).
-4. A WordPress adminban: Bővítmények -> Új hozzáadása -> Bővítmény feltöltése.
+**Telepítési lehetőségek:**
+
+**A) Automatikus telepítés (Ajánlott)**
+1. Lépj be a WordPress admin felületedre.
+2. Menj a **Bővítmények -> Új bővítmény hozzáadása** menüpontba.
+3. A jobb felső keresőbe írd be: **Elállás Kezelő** (vagy `elallas-kezelo`).
+4. Kattints a **Telepítés most**, majd a **Bekapcsolás** gombra.
+
+**B) Manuális telepítés (.zip fájlból)**
+1. Kattints a fenti kék gombra a hivatalos WordPress.org oldal megnyitásához.
+2. Töltsd le a bővítményt a **Download** gombbal.
+3. A WordPress adminban: **Bővítmények -> Új bővítmény hozzáadása -> Bővítmény feltöltése**.
+4. Tallózd be a letöltött .zip fájlt, majd telepítsd és kapcsold be.
 
 ## Funkciók
 - **Natív WooCommerce integráció:** Nincs szükség külön shortcode-ra! A bővítmény teljesen beépül a WooCommerce gyári **Rendeléskövetés** (`[woocommerce_order_tracking]`) felületébe és a regisztrált vásárlók **Fiókom -> Rendelések** oldalára. A gomb és az űrlap automatikusan megjelenik a rendelés részletei alatt.

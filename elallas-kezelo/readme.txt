@@ -6,11 +6,11 @@ Tested up to: 7.0
 Requires PHP: 7.4
 WC requires at least: 7.0
 WC tested up to: 10.8
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-A professional WooCommerce extension that automates customer withdrawals and order cancellations, fully complying with consumer protection laws.
+A professional WooCommerce extension that automates customer withdrawals and order cancellations, designed to help webshops comply with consumer protection laws.
 
 == Description ==
 
@@ -36,6 +36,12 @@ The extension follows the best WordPress and WooCommerce programming practices:
 * **Speed Optimized:** Does not create unnecessary custom database tables, does not cause "autoload bloat".
 * **HPOS Compatible:** Fully supports the new WooCommerce High-Performance Order Storage (HPOS) feature.
 * **Reliable Validation:** In addition to client-side (JavaScript) checks, it also uses comprehensive server-side (PHP) validation and strict nonce security checks.
+
+### Disclaimer / Jogi Nyilatkozat
+
+**EN:** I developed the legal logic of this plugin to the best of my knowledge to help webshops comply with consumer protection laws. However, I assume no legal liability for any legal issues, fines, or damages arising from the use of this software. If anyone has any remarks, suggestions, or feedback regarding the legal compliance or functionality, please let me know, and I will do my best to implement or fix it.
+
+**HU:** A bővítmény jogi és működési logikáját a legjobb tudásom szerint készítettem el, hogy maximálisan segítsek a webáruházaknak a jogszabályi megfelelésben. A szoftver használatából eredő esetleges jogi problémákért vagy büntetésekért azonban semmilyen felelősséget nem vállalok. Ha bárkinek bármilyen észrevétele, javaslata van – akár a jogi megfelelőséggel, akár a működéssel kapcsolatban –, kérlek jelezzétek, és igyekszem beépíteni, javítani!
 
 == Installation ==
 
