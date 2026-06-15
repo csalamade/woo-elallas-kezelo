@@ -54,11 +54,12 @@ Yes, the extension is fully compatible with the new HPOS database structure.
 
 == Screenshots ==
 
-1. The customer interface with the withdrawal button and form.
-2. The settings page in the administration area.
-3. Automatic order notes in the admin panel upon withdrawal.
+1. A megjelenő elállási/lemondási űrlap.
 
 == Changelog ==
+
+= 1.0.4 =
+* bugfix
 
 = 1.0.3 =
 * upload wp repository
