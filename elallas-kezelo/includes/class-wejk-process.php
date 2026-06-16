@@ -88,6 +88,14 @@ class WEJK_Process {
             // Részleges elállás: termékek ellenőrzése
             $returned_items = isset($_POST['wejk_returned_products']) ? array_map('absint', $_POST['wejk_returned_products']) : array();
             
+            // Validáljuk a beküldött ID-kat a rendelés tételei (és termék ID-k a visszakompatibilitás végett) alapján
+            $valid_ids = array();
+            foreach ($order->get_items() as $item_id => $item) {
+                $valid_ids[] = $item_id;
+                $valid_ids[] = $item->get_product_id();
+            }
+            $returned_items = array_intersect($returned_items, $valid_ids);
+            
             // 3. Már meglévő lemondások betöltése
             $existing_returned = $order->get_meta('_wejk_returned_items');
             if (!is_array($existing_returned)) {
@@ -96,9 +104,19 @@ class WEJK_Process {
 
             // 4. Szűrjük az újonnan beküldött listát (ne dolgozzuk fel újra azt, ami már le van mondva)
             $new_returned_items = array();
-            foreach ($returned_items as $pid) {
-                if (!in_array($pid, $existing_returned)) {
-                    $new_returned_items[] = $pid;
+            foreach ($returned_items as $submitted_id) {
+                $is_already_returned = false;
+                foreach ($order->get_items() as $item_id => $item) {
+                    $product_id = $item->get_product_id();
+                    if ($submitted_id === $item_id || $submitted_id === $product_id) {
+                        if (in_array($item_id, $existing_returned) || in_array($product_id, $existing_returned)) {
+                            $is_already_returned = true;
+                            break;
+                        }
+                    }
+                }
+                if (!$is_already_returned) {
+                    $new_returned_items[] = $submitted_id;
                 }
             }
 
@@ -113,15 +131,15 @@ class WEJK_Process {
             $merged_returned_items = array_unique(array_merge($existing_returned, $new_returned_items));
             $order->update_meta_data('_wejk_returned_items', $merged_returned_items);
             
-            // Rendelésben lévő egyedi termék ID-k kigyűjtése
-            $order_product_ids = array();
-            foreach ($order->get_items() as $item) {
-                $order_product_ids[] = $item->get_product_id();
-            }
-            $unique_order_product_ids = array_unique($order_product_ids);
-
             // Részleges lemondás vizsgálata az összes lemondott termék alapján
-            $is_partial_return = count($merged_returned_items) < count($unique_order_product_ids);
+            $returned_count = 0;
+            foreach ($order->get_items() as $item_id => $item) {
+                $product_id = $item->get_product_id();
+                if (in_array($item_id, $merged_returned_items) || in_array($product_id, $merged_returned_items)) {
+                    $returned_count++;
+                }
+            }
+            $is_partial_return = $returned_count < count($order->get_items());
 
             if ($is_partial_return) {
                 // Részleges esetén az új beállítás szerinti státusz
@@ -140,9 +158,10 @@ class WEJK_Process {
 
             // Rendelési Jegyzet (Order Note) hozzáadása a MOST lemondott terméklistával
             $note = __('Új lemondás/elállás beküldve. Érintett termékek:', 'elallas-kezelo') . "\n";
-            foreach ($order->get_items() as $item) {
-                if (in_array($item->get_product_id(), $new_returned_items)) {
-                    $note .= '- ' . $item->get_name() . ' (ID: ' . $item->get_product_id() . ')' . "\n";
+            foreach ($order->get_items() as $item_id => $item) {
+                $item_pid = $item->get_product_id();
+                if (in_array($item_id, $new_returned_items) || in_array($item_pid, $new_returned_items)) {
+                    $note .= '- ' . $item->get_name() . ' (ID: ' . $item_pid . ')' . "\n";
                 }
             }
             $order->add_order_note($note);

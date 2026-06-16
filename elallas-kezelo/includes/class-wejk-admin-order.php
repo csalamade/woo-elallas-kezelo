@@ -41,7 +41,7 @@ class WEJK_Admin_Order {
             $product_id = $item->get_product_id();
             
             // Ha ez a konkrét termék benne van a listában
-            if (in_array($product_id, $returned_items)) {
+            if (in_array($item_id, $returned_items) || in_array($product_id, $returned_items)) {
                 echo '<div style="margin-top: 5px;"><span style="background: #dc3232; color: #fff; padding: 3px 6px; border-radius: 3px; font-size: 11px; font-weight: bold; text-transform: uppercase;">' . esc_html__('Lemondva / Elállás', 'elallas-kezelo') . '</span></div>';
             }
         }

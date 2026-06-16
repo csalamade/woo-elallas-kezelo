@@ -105,7 +105,7 @@ class WEJK_Email_Customer_Withdrawal extends WC_Email {
         $items = $this->object->get_items();
         foreach ($items as $item_id => $item) {
             $product_id = $item->get_product_id();
-            if (empty($actual_returned_items) || in_array($product_id, $actual_returned_items)) {
+            if (empty($actual_returned_items) || in_array($item_id, $actual_returned_items) || in_array($product_id, $actual_returned_items)) {
                 echo '<tr>';
                 echo '<td style="border: 1px solid #eee;">' . esc_html($item->get_name()) . '</td>';
                 echo '<td style="border: 1px solid #eee;">' . esc_attr($item->get_quantity()) . ' db</td>';

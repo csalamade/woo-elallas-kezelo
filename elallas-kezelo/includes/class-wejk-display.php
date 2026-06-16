@@ -127,8 +127,9 @@ class WEJK_Display
 
                     // Ellenőrizzük, hogy minden termék le van-e már mondva
                     $all_returned = true;
-                    foreach ($order->get_items() as $item) {
-                        if (!in_array($item->get_product_id(), $existing_returned)) {
+                    foreach ($order->get_items() as $item_id => $item) {
+                        $item_pid = $item->get_product_id();
+                        if (!in_array($item_id, $existing_returned) && !in_array($item_pid, $existing_returned)) {
                             $all_returned = false;
                             break;
                         }
@@ -145,12 +146,12 @@ class WEJK_Display
                     <?php
                     foreach ($order->get_items() as $item_id => $item) {
                         $product_id = $item->get_product_id();
-                        $is_returned = in_array($product_id, $existing_returned);
+                        $is_returned = in_array($item_id, $existing_returned) || in_array($product_id, $existing_returned);
                         $opacity = $is_returned ? '0.6' : '1';
-
+ 
                         echo '<div style="margin-bottom: 10px; opacity: ' . esc_attr($opacity) . ';">';
                         echo '<label for="wejk_item_' . esc_attr($item_id) . '" style="display: flex; align-items: center; cursor: pointer;">';
-                        echo '<input type="checkbox" name="wejk_returned_products[]" value="' . esc_attr($product_id) . '" id="wejk_item_' . esc_attr($item_id) . '" ' . disabled($is_returned, true, false) . ' ' . checked($is_returned, true, false) . '>';
+                        echo '<input type="checkbox" name="wejk_returned_products[]" value="' . esc_attr($item_id) . '" id="wejk_item_' . esc_attr($item_id) . '" ' . disabled($is_returned, true, false) . ' ' . checked($is_returned, true, false) . '>';
                         echo '<span style="margin-left: 8px;">' . esc_html($item->get_name()) . ' (x' . esc_html($item->get_quantity()) . ')</span>';
                         if ($is_returned) {
                             echo '<span style="margin-left: 10px; color: #dc3232; font-size: 0.9em; font-weight: bold;">' . esc_html__('(Már lemondva)', 'elallas-kezelo') . '</span>';
