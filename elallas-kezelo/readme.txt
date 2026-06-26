@@ -69,6 +69,7 @@ Yes, the extension is fully compatible with the new HPOS database structure.
 * Teljesítmény: Optimalizált megjelenítés (nulla plusz terhelés a többi oldalon).
 * Javítás: Variálható termékeknél javítva a többszörös tételek kezelése. Termék ID helyett egyedi tétel azonosítót (Order Item ID) használ a rendszer, így az azonos termékvariációk külön-külön is lemondhatók.
 * Javítás: Teljes visszafelé kompatibilitás biztosítása a korábbi elállások jelölésével.
+* Jogszabályi megfelelés: Alapértelmezett feliratok frissítése a 45/2014. Korm. rendelet 22. § szerint („Elállás a szerződéstől” és „Elállás megerősítése”), valamint jogi felelősségkizárással ellátott figyelmeztetés elhelyezése a beállítások oldalon.
 
 = 1.0.5 =
 * bugfix

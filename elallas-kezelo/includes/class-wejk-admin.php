@@ -164,9 +164,16 @@ class WEJK_Admin {
 
     public function section_info() {
         echo esc_html__('Állítsd be, hogy mely rendelési státuszokban lehetséges az elállás és a rendelés lemondása.', 'elallas-kezelo');
+        
+        echo '<div class="notice notice-warning" style="margin-top: 15px; padding: 10px 15px; border-left: 4px solid #f0b849; background-color: #fbf8f2;">';
+        echo '<strong>' . esc_html__('JOGSZABÁLYI ELŐÍRÁS (45/2014. Korm. rendelet 22. §):', 'elallas-kezelo') . '</strong><br>';
+        echo esc_html__('Az elállási funkciót elérhetővé tévő gomb / menüpont nevének kötelezően tartalmaznia kell az ', 'elallas-kezelo') . '<strong>' . esc_html__('„Elállás a szerződéstől”', 'elallas-kezelo') . '</strong>' . esc_html__(' kifejezést, a beküldő gomb feliratának pedig pontosan az ', 'elallas-kezelo') . '<strong>' . esc_html__('„Elállás megerősítése”', 'elallas-kezelo') . '</strong>' . esc_html__(' szöveget kell viselnie. Kérjük, ennek megfelelően nevezze el a menüpontot vagy oldalt a webáruházában.', 'elallas-kezelo') . '<br>';
+        echo '<span style="font-size: 0.9em; color: #666; display: block; margin-top: 5px;"><em>' . esc_html__('Figyelem: Ez a tájékoztatás kizárólag információs célokat szolgál, és nem minősül hivatalos jogi tanácsadásnak.', 'elallas-kezelo') . '</em></span>';
+        echo '</div>';
+
         echo '<div class="notice notice-info" style="margin-top: 15px; padding: 10px 15px;">';
         echo '<strong>' . esc_html__('Vendég vásárlók tájékoztatása:', 'elallas-kezelo') . '</strong> ';
-        echo esc_html__('A regisztráció nélkül vásárló vendégek az alapértelmezett WooCommerce rendeléskövető felületen keresztül indíthatják el az elállási folyamatot. Ennek biztosításához kérjük, hozzon létre egy új oldalt (pl. "Rendelés követése és elállás"), majd illessze be a ', 'elallas-kezelo');
+        echo esc_html__('A regisztráció nélkül vásárló vendégek az alapértelmezett WooCommerce rendeléskövető felületen keresztül indíthatják el az elállási folyamatot. Ennek biztosításához kérjük, hozzon létre egy új oldalt (pl. "Elállás a szerződéstől / Rendelés követése"), majd illessze be a ', 'elallas-kezelo');
         echo '<code>[woocommerce_order_tracking]</code>';
         echo esc_html__(' shortcode-ot a tartalomba.', 'elallas-kezelo');
         echo '</div>';
@@ -255,18 +262,18 @@ class WEJK_Admin {
     }
 
     public function pre_dispatch_title_callback() {
-        $option = get_option('wejk_pre_dispatch_title', __('Szeretné lemondani a rendelését?', 'elallas-kezelo'));
+        $option = get_option('wejk_pre_dispatch_title', __('Elállás a szerződéstől', 'elallas-kezelo'));
         echo '<input type="text" name="wejk_pre_dispatch_title" value="' . esc_attr($option) . '" style="width: 100%; max-width: 600px;" />';
     }
-
+ 
     public function pre_dispatch_desc_callback() {
         $default_desc = __('Rendelése még feladás előtt áll, így most gyorsan és egyszerűen lemondhatja. A 45/2014. (II. 26.) Korm. rendelet 20. § (2) bek. alapján ez jogilag is elállásnak minősül.', 'elallas-kezelo');
         $option = get_option('wejk_pre_dispatch_desc', $default_desc);
         echo '<textarea name="wejk_pre_dispatch_desc" rows="3" cols="60" style="width: 100%; max-width: 600px;">' . esc_textarea($option) . '</textarea>';
     }
-
+ 
     public function post_dispatch_title_callback() {
-        $option = get_option('wejk_post_dispatch_title', __('Szeretne élni az elállási jogával?', 'elallas-kezelo'));
+        $option = get_option('wejk_post_dispatch_title', __('Elállás a szerződéstől', 'elallas-kezelo'));
         echo '<input type="text" name="wejk_post_dispatch_title" value="' . esc_attr($option) . '" style="width: 100%; max-width: 600px;" />';
     }
 

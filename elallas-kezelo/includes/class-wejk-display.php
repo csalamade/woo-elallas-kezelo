@@ -69,12 +69,12 @@ class WEJK_Display
 
         // Gomb és az elrejtett űrlap
         if ($is_pre_dispatch) {
-            $title = get_option('wejk_pre_dispatch_title', __('Szeretné lemondani a rendelését?', 'elallas-kezelo'));
+            $title = get_option('wejk_pre_dispatch_title', __('Elállás a szerződéstől', 'elallas-kezelo'));
             $desc = get_option('wejk_pre_dispatch_desc', __('Rendelése még feladás előtt áll, így most gyorsan és egyszerűen lemondhatja. A 45/2014. (II. 26.) Korm. rendelet 20. § (2) bek. alapján ez jogilag is elállásnak minősül.', 'elallas-kezelo'));
             $btn_text = __('Elállás megerősítése', 'elallas-kezelo');
             $confirm = __('Biztosan szeretné lemondani a rendelést még a feladás előtt?', 'elallas-kezelo');
         } else {
-            $title = get_option('wejk_post_dispatch_title', __('Szeretne élni az elállási jogával?', 'elallas-kezelo'));
+            $title = get_option('wejk_post_dispatch_title', __('Elállás a szerződéstől', 'elallas-kezelo'));
             $desc = get_option('wejk_post_dispatch_desc', __('Erre a rendelésre még érvényes a 14 napos elállási jog. A gombra kattintva jelezheti felénk visszaküldési szándékát.', 'elallas-kezelo'));
             $btn_text = __('Elállás megerősítése', 'elallas-kezelo');
             $confirm = __('Biztosan szeretné kezdeményezni a rendelés visszaküldését?', 'elallas-kezelo');
