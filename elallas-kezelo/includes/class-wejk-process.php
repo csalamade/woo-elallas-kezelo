@@ -10,24 +10,34 @@ if (!defined('ABSPATH')) {
 class WEJK_Process {
 
     public function __construct() {
-        // Sikeres képernyő megjelenítése (kiváltja a normál oldalbetöltést)
-        add_action('template_redirect', array($this, 'display_success_page'), 5);
+        // Sikeres képernyő megjelenítése a tartalom helyén, csak ha szükséges (így nincs felesleges overhead más oldalakon)
+        if (isset($_GET['wejk_elallas_success'])) {
+            add_filter('the_content', array($this, 'display_success_page'));
+        }
         
         // KÉRÉS FELDOLGOZÁSA (STÁTUSZ VÁLTÁS, E-MAIL KÜLDÉS)
         add_action('template_redirect', array($this, 'process_return_request'));
     }
 
-    public function display_success_page() {
+    public function display_success_page($content) {
         if (isset($_GET['wejk_elallas_success'])) {
             $order_id = absint($_GET['wejk_elallas_success']);
             if (!$order_id || !wc_get_order($order_id)) {
-                return;
+                return $content;
             }
+
+            // Csak a fő lekérdezésben és a fő loopban cseréljük ki, elkerülve a menüket, oldalsávokat stb.
+            if (!is_main_query() || !in_the_loop()) {
+                return $content;
+            }
+
+            // Eltávolítjuk a szűrőt, hogy elkerüljük az esetleges többszörös lefutást
+            remove_filter('the_content', array($this, 'display_success_page'));
 
             $default_msg = "Az elállási/lemondási nyilatkozatot sikeresen rögzítettük.\n\nA visszaigazolást, valamint a további teendőket elküldtük az e-mail címére.\n\n(Ez a jogszabályoknak megfelelő tartós adathordozónak minősül).";
             $success_message = get_option('wejk_success_message', $default_msg);
 
-            get_header();
+            ob_start();
             ?>
             <div class="woocommerce">
                 <div class="woocommerce-MyAccount-content" style="width: 100%; max-width: 800px; margin: 50px auto; text-align: center;">
@@ -42,9 +52,9 @@ class WEJK_Process {
                 </div>
             </div>
             <?php
-            get_footer();
-            exit;
+            return ob_get_clean();
         }
+        return $content;
     }
 
     public function process_return_request() {

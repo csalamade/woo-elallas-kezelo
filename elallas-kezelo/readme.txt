@@ -6,7 +6,7 @@ Tested up to: 7.0
 Requires PHP: 7.4
 WC requires at least: 7.0
 WC tested up to: 10.8
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -64,7 +64,13 @@ Yes, the extension is fully compatible with the new HPOS database structure.
 
 == Changelog ==
 
-=1.0.5=
+= 1.0.6 =
+* Hibajavítás: Elementor fejlécekkel/láblécekkel és egyes sablonokkal való ütközés javítása, ami miatt a visszaigazoló üzenet betöltésekor megfagyott az oldal.
+* Teljesítmény: Optimalizált megjelenítés (nulla plusz terhelés a többi oldalon).
+* Javítás: Variálható termékeknél javítva a többszörös tételek kezelése. Termék ID helyett egyedi tétel azonosítót (Order Item ID) használ a rendszer, így az azonos termékvariációk külön-külön is lemondhatók.
+* Javítás: Teljes visszafelé kompatibilitás biztosítása a korábbi elállások jelölésével.
+
+= 1.0.5 =
 * bugfix
 
 
